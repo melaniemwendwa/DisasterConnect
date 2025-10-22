@@ -15,7 +15,8 @@ export default function LandingPage() {
           <img 
             src={landingPagePhoto} 
             alt="Disaster relief background"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover brightness-[0.75]"
+            style={{ filter: 'brightness(0.65)' }}
             onError={(e) => {
               console.log('Image failed to load:', landingPagePhoto);
               e.target.style.display = 'none';
