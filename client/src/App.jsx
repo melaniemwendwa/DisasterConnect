@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import ReportForm from "./pages/ReportForm";
-import LandingPage from "./pages/Landingpage";
+import LandingPage from "./pages/LandingPage";
 
 function AppContent() {
   const location = useLocation();
