@@ -11,7 +11,7 @@ import Signup from "./pages/Signup";
 function AppContent() {
   const location = useLocation();
 
-  const showFooterPaths = ["/", "/report", "/home", "/login", "/signup"];
+  const showFooterPaths = ["/", "/report", "/home"];
   const showNavbarPaths = ["/report", "/home"];
 
   const shouldShowFooter = showFooterPaths.includes(location.pathname);
