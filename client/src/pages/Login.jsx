@@ -32,7 +32,7 @@ const LoginPage = () => {
                 type="text"
                 placeholder="Username"
                 required
-                className="w-full p-4 text-lg bg-gray-200 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150"
+                className="w-full p-4 text-lg bg-gray-200 border border-gray-300 rounded-[24px] text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150"
               />
             </div>
             
@@ -42,14 +42,14 @@ const LoginPage = () => {
                 type="password"
                 placeholder="Password"
                 required
-                className="w-full p-4 text-lg bg-gray-200 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150"
+                className="w-full p-4 text-lg bg-gray-200 border border-gray-300 rounded-[24px] text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150"
               />
             </div>
             
             {/* Login Button */}
             <button
               type="submit"
-              className="w-full py-4 bg-[#224266] text-white font-bold text-xl rounded-lg hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-150"
+              className="w-full p-4 text-lg bg-[#224266] border border-gray-300 rounded-[24px] text-white text-center focus:outline-none focus:ring-2 focus:ring-blue-[#id3756] focus:border-transparent transition duration-150"
             >
               Login
             </button>

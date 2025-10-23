@@ -1,5 +1,9 @@
 import React from 'react';
 import logo from '../assets/logo.png';
+import { FaEnvelope } from "react-icons/fa";
+import { IoMdLock } from "react-icons/io";
+
+
 
 const SignupPage = () => {
   const handleSubmit = (e) => {
@@ -41,11 +45,12 @@ const SignupPage = () => {
                   id="email"
                   placeholder="Enter email address"
                   required
-                  className="w-full p-4 text-lg bg-gray-200 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+                  className="w-full pr-12 pl-4 py-4 text-lg font-normal bg-gray-200 border-2 border-gray-300 rounded-[24px] focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
                 />
-                <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
-                    {/* Simple envelope icon for Email address */}
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-17 4v7a2 2 0 002 2h12a2 2 0 002-2v-7"></path></svg>
+
+                {/* Envelope icon positioned on the right side of the input */}
+                <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500">
+                  <FaEnvelope className="w-5 h-5" />
                 </span>
               </div>
             </div>
@@ -59,12 +64,10 @@ const SignupPage = () => {
                   id="password"
                   placeholder="Password"
                   required
-                  className="w-full p-4 text-lg bg-gray-200 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+                  className="w-full pr-12 p-4 text-lg font-normal bg-gray-200 border-2 border-gray-300 rounded-[24px] focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
                 />
-                <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
-                    {/* Lock icon for Password */}
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4"></path></svg>
-                </span>
+                {/* Lock icon for Password */}
+                <IoMdLock className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-6 h-6" />
               </div>
             </div>
             
@@ -77,19 +80,17 @@ const SignupPage = () => {
                   id="verify-password"
                   placeholder="Verify password"
                   required
-                  className="w-full p-4 text-lg bg-gray-200 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+                  className="w-full pr-12 p-4 text-lg font-normal bg-gray-200 border-2 border-gray-300 rounded-[24px] focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
                 />
-                <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
-                    {/* Lock icon for Verify password */}
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4"></path></svg>
-                </span>
+                <IoMdLock  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-6 h-6"/>
+
               </div>
             </div>
             
             {/* Sign Up Button */}
             <button
               type="submit"
-              className="w-full py-4 bg-[#224266] text-white font-bold text-xl rounded-xl hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-150 mt-8"
+              className="w-full py-4 bg-[#224266] text-white font-bold text-xl rounded-xl hover:bg-[#1d3756] focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-150 mt-8"
             >
               Sign up
             </button>
@@ -99,7 +100,7 @@ const SignupPage = () => {
           <div className="mt-8 text-center text-base">
             <p className="text-gray-600">
               Already have an account?{' '}
-              <a href="/login" className="text-blue-700 hover:text-blue-900 font-medium transition duration-150">
+              <a href="/login" className="text-[#224266] hover:text-[#1d3756] font-medium transition duration-150">
                 Log In
               </a>
             </p>
