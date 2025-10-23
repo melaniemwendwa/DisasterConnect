@@ -2,7 +2,7 @@ import { FaInstagram, FaFacebookF, FaTwitter } from "react-icons/fa";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#224266] text-gray-200 py-8 mt-10 font-jost">
+    <footer className="bg-[#224266] text-gray-200 py-8 font-jost">
       <div className="container mx-auto px-4 flex flex-col items-center text-center space-y-4">
         <h2 className="text-xl font-semibold tracking-wide">
           DisasterConnect
