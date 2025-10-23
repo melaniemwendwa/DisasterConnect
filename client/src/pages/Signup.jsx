@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import logo from '../assets/logo.png';
+import background from '../assets/backround image.png';
 import { FaEnvelope } from "react-icons/fa";
 import { IoMdLock } from "react-icons/io";
 
 
 
 const SignupPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [verifyPassword, setVerifyPassword] = useState('');
+  const [showEmailPlaceholder, setShowEmailPlaceholder] = useState(true);
+  const [showPasswordPlaceholder, setShowPasswordPlaceholder] = useState(true);
+  const [showVerifyPasswordPlaceholder, setShowVerifyPasswordPlaceholder] = useState(true);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     // Logic for handling sign up submission goes here
@@ -13,9 +21,17 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+    <div 
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{
+        backgroundImage: `url(${background})`,
+        backgroundPosition: 'center',
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
       {/* Container size matched to the large size requested for the Login page */}
-      <div className="w-full max-w-3xl bg-white border border-gray-200 rounded-xl shadow-2xl overflow-hidden">
+      <div className="w-full max-w-3xl bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl shadow-2xl overflow-hidden">
         
         {/* Header/Title Bar (Dark Blue) - Logo Removed */}
         
@@ -43,7 +59,14 @@ const SignupPage = () => {
                 <input
                   type="email"
                   id="email"
-                  placeholder="Enter email address"
+                  placeholder={showEmailPlaceholder ? 'Enter email address' : ''}
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setShowEmailPlaceholder(e.target.value === '');
+                  }}
+                  onFocus={() => setShowEmailPlaceholder(false)}
+                  onBlur={() => setShowEmailPlaceholder(email === '')}
                   required
                   className="w-full pr-12 pl-4 py-4 text-lg font-normal bg-gray-200 border-2 border-gray-300 rounded-[24px] focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
                 />
@@ -62,7 +85,14 @@ const SignupPage = () => {
                 <input
                   type="password"
                   id="password"
-                  placeholder="Password"
+                  placeholder={showPasswordPlaceholder ? 'Password' : ''}
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setShowPasswordPlaceholder(e.target.value === '');
+                  }}
+                  onFocus={() => setShowPasswordPlaceholder(false)}
+                  onBlur={() => setShowPasswordPlaceholder(password === '')}
                   required
                   className="w-full pr-12 p-4 text-lg font-normal bg-gray-200 border-2 border-gray-300 rounded-[24px] focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
                 />
@@ -78,7 +108,14 @@ const SignupPage = () => {
                 <input
                   type="password"
                   id="verify-password"
-                  placeholder="Verify password"
+                  placeholder={showVerifyPasswordPlaceholder ? 'Verify password' : ''}
+                  value={verifyPassword}
+                  onChange={(e) => {
+                    setVerifyPassword(e.target.value);
+                    setShowVerifyPasswordPlaceholder(e.target.value === '');
+                  }}
+                  onFocus={() => setShowVerifyPasswordPlaceholder(false)}
+                  onBlur={() => setShowVerifyPasswordPlaceholder(verifyPassword === '')}
                   required
                   className="w-full pr-12 p-4 text-lg font-normal bg-gray-200 border-2 border-gray-300 rounded-[24px] focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
                 />
