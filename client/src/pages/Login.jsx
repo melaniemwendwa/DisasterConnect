@@ -1,15 +1,46 @@
 import React, { useState } from 'react';
 import logo from '../assets/logo.png';
 import background from '../assets/backround image.png';
+import { useNavigate } from 'react-router-dom';
+
 const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showUsernamePlaceholder, setShowUsernamePlaceholder] = useState(true);
   const [showPasswordPlaceholder, setShowPasswordPlaceholder] = useState(true);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login attempt submitted');
+    setError('');
+
+    try {
+      const res = await fetch("http://127.0.0.1:5555/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          email: username,
+          password: password
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        setError(errorData.error || 'Login failed');
+        return;
+      }
+
+      const data = await res.json();
+      console.log("Login successful:", data);
+      navigate('/dashboard');
+    } catch (err) {
+      console.error("Login error:", err);
+      setError('Something went wrong. Please try again.');
+    }
   };
 
   return (
@@ -43,15 +74,10 @@ const LoginPage = () => {
             {/* Username Input */}
             <div>
               <input
-                type="text"
-                placeholder={showUsernamePlaceholder ? 'Username' : ''}
+                type="email"
+                placeholder="Email"
                 value={username}
-                onChange={(e) => {
-                  setUsername(e.target.value);
-                  setShowUsernamePlaceholder(e.target.value === '');
-                }}
-                onFocus={() => setShowUsernamePlaceholder(false)}
-                onBlur={() => setShowUsernamePlaceholder(username === '')}
+                onChange={(e) => setUsername(e.target.value)}
                 required
                 className="w-full p-4 text-lg bg-gray-200 border border-gray-300 rounded-[24px] text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150"
               />
@@ -75,12 +101,18 @@ const LoginPage = () => {
             </div>
             
             {/* Login Button */}
-            <button
+              <button
               type="submit"
               className="w-full p-4 text-lg bg-[#224266] border border-gray-300 rounded-[24px] text-white text-center focus:outline-none focus:ring-2 focus:ring-blue-[#id3756] focus:border-transparent transition duration-150"
             >
               Login
             </button>
+
+            {error && (
+              <div className="mt-4 text-red-500 text-sm text-center bg-red-50 p-3 rounded-[24px] border border-red-200">
+                {error}
+              </div>
+            )}
           </form>
 
           {/* Sign Up Link */}
