@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 // 1. **FIXED: Ensure this line is active and correct**
-import Api from '../Services/api'; // Assuming this path is correct: client/src/pages/ -> client/src/services/Api
+import Api, { BASE_URL } from '../Services/api'; // import base URL to build image URLs
 // You may also need to get the BASE_URL if your Api file exports it
 // If Api.js exports BASE_URL, import it:
 // import Api, { BASE_URL } from '../services/Api'; 
@@ -28,10 +28,18 @@ const getPriorityClasses = (severity) => {
 const ReportCard = ({ report }) => {
   const { priority, priorityClass, borderClass } = getPriorityClasses(report.severity);
   
-  // Construct the full image URL using the backend base URL (if needed)
-  // **POTENTIAL ENHANCEMENT: Requires BASE_URL to be exported from Api.js**
-  // const imageUrl = BASE_URL && report.image ? `${BASE_URL}${report.image}` : report.image;
-  // For now, we rely on the backend providing a full or relative path that works.
+  // Build a usable image URL. The backend stores images as "/uploads/<filename>".
+  // When report.image is a relative path (starts with '/'), prefix the backend BASE_URL
+  let imageUrl = null;
+  if (report.image) {
+    if (report.image.startsWith('http') || report.image.startsWith('//')) {
+      imageUrl = report.image;
+    } else if (report.image.startsWith('/')) {
+      imageUrl = `${BASE_URL}${report.image}`;
+    } else {
+      imageUrl = `${BASE_URL}/${report.image}`;
+    }
+  }
   
   return (
     <div className={`flex justify-between items-start p-5 mb-5 bg-white shadow-md rounded-lg border-l-4 ${borderClass}`}>
@@ -55,11 +63,11 @@ const ReportCard = ({ report }) => {
       </div>
       
       {/* Image (Right Side) */}
-      {report.image && (
+      {imageUrl && (
         <img 
-          src={report.image} 
+          src={imageUrl} 
           alt={`${report.type} in ${report.location}`} 
-          className="w-52 h-36 object-cover rounded-md flex-shrink-0" 
+          className="w-52 h-36 object-cover rounded-md flex-shrink-0 ml-4" 
         />
       )}
     </div>

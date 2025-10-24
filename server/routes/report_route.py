@@ -1,5 +1,6 @@
 from flask_restful import Resource
 from flask import request, jsonify, make_response, current_app, session
+from werkzeug.utils import secure_filename
 from models import  Report, User
 import os
 from config import api, db
@@ -39,9 +40,12 @@ class Reports(Resource):
             os.makedirs(upload_folder, exist_ok=True)
             # Use a more unique filename to prevent overwrites, e.g., using uuid or timestamp
             # For simplicity, sticking to original logic but be mindful of collisions
-            image_path = os.path.join(upload_folder, image.filename) 
+            # use a secure filename to avoid path traversal or unsafe characters
+            filename = secure_filename(image.filename)
+            image_path = os.path.join(upload_folder, filename)
             image.save(image_path)
-            image_url = f"/{image_path}"
+            # Expose a web-accessible path (served from /uploads/<filename>)
+            image_url = f"/uploads/{filename}"
 
         severity = classify_severity(description)
         

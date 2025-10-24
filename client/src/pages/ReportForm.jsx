@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import background from "../assets/backround image.png";
+import Api from "../Services/api";
 
 export default function ReportForm() {
   const [message, setMessage] = useState("");
@@ -23,21 +24,26 @@ export default function ReportForm() {
   
   const handleSubmit = async (values, { resetForm }) => {
     try {
+      // Build FormData, handling file inputs explicitly
       const formData = new FormData();
       for (const key in values) {
-        formData.append(key, values[key]);
+        const value = values[key];
+        // If it's a File (browser File object), append it directly
+        if (value && (value instanceof File || (value.name && value.size >= 0))) {
+          formData.append(key, value);
+        } else if (value !== null && typeof value !== "undefined") {
+          formData.append(key, value);
+        }
       }
 
-      const response = await fetch("http://127.0.0.1:5555/reports", {
-        method: "POST",
-        body: formData,
-      });
+      // Use Api (axios) so baseURL logic is consistent across the app
+      const response = await Api.post('/reports', formData);
 
-      if (response.ok) {
+      if (response.status === 201 || response.status === 200) {
         setMessage("Report submitted successfully!");
         resetForm();
       } else {
-        setMessage(" Failed to submit report. Try again.");
+        setMessage("Failed to submit report. Try again.");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -177,17 +183,27 @@ export default function ReportForm() {
                   accept="image/*"
                   className="hidden"
                   id="image-upload-input"
-                  onChange={(event) =>
-                    setFieldValue("image", event.currentTarget.files[0])
-                  }
+                  onChange={(event) => {
+                    const file = event.currentTarget.files[0];
+                    setFieldValue("image", file);
+                    const el = document.getElementById('selected-file-name');
+                    if (el) el.innerText = file ? file.name : '';
+                  }}
                 />
-                <button
-                  type="button"
-                  className="bg-[#224266] hover:bg-[#1d3756] text-white font-semibold py-2 px-4 rounded-lg mb-2"
-                  onClick={() => document.getElementById('image-upload-input').click()}
-                >
-                  Upload 
-                </button>
+                <div className="flex flex-col items-center">
+                  <button
+                    type="button"
+                    className="bg-[#224266] hover:bg-[#1d3756] text-white font-semibold py-2 px-4 rounded-lg mb-2"
+                    onClick={() => document.getElementById('image-upload-input').click()}
+                  >
+                    Upload 
+                  </button>
+                  {/* show selected file name if present */}
+                  <div className="text-sm text-gray-600"> 
+                    {/** Formik doesn't pass values here directly; we can read the input element if selected */}
+                    <span id="selected-file-name" className="block mt-1"></span>
+                  </div>
+                </div>
                 <ErrorMessage
                   name="image"
                   component="div"
