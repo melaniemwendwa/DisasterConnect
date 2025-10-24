@@ -20,9 +20,9 @@ class Reports(Resource):
         return make_response(jsonify([r.to_dict() for r in reports]), 200)
 
     def post(self):
+        # 1. Check for logged-in user (OPTIONAL)
+        # We check for the user ID, but don't enforce it
         user_id = session.get("user_id")
-        if not user_id:
-            return make_response({"error": "Unauthorized"}, 401)
 
         type = request.form.get("type")
         description = request.form.get("description")
@@ -35,13 +35,26 @@ class Reports(Resource):
         image_url = None
         if image:
             upload_folder = current_app.config["UPLOAD_FOLDER"]
+            # Ensure upload folder exists
             os.makedirs(upload_folder, exist_ok=True)
-            image_path = os.path.join(upload_folder, image.filename)
+            # Use a more unique filename to prevent overwrites, e.g., using uuid or timestamp
+            # For simplicity, sticking to original logic but be mindful of collisions
+            image_path = os.path.join(upload_folder, image.filename) 
             image.save(image_path)
             image_url = f"/{image_path}"
 
         severity = classify_severity(description)
-        user = User.query.get(user_id)
+        
+        # 2. Handle Anonymous/Logged-in Reporter Data
+        reporter_name = "Anonymous"
+        
+        if user_id:
+            user = User.query.get(user_id)
+            if user:
+                reporter_name = user.username
+        
+        # Note: If user_id is None, the report will be associated with NULL in the database,
+        # which correctly indicates an anonymous submission.
 
         new_report = Report(
             type=type,
@@ -49,8 +62,8 @@ class Reports(Resource):
             location=location,
             image=image_url,
             severity=severity,
-            reporter_name=user.username if user else "Unknown",
-            user_id=user_id
+            reporter_name=reporter_name,  # Set name to username or "Anonymous"
+            user_id=user_id               # Set user_id to actual ID or None (NULL in DB)
         )
 
         db.session.add(new_report)

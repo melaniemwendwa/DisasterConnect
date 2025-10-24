@@ -1,8 +1,8 @@
 # Standard library imports
+import os
 
 # Remote library imports
 from flask import Flask
-import os
 from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_restful import Api
@@ -14,6 +14,16 @@ from sqlalchemy import MetaData
 
 # Instantiate app, set attributes
 app = Flask(__name__)
+
+# --- NEW CONFIGURATION ADDED HERE ---
+# Define the absolute path for file uploads
+# It is best practice to define a static folder or an easily accessible folder
+# relative to your application's root directory.
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+# Define the folder where uploaded images will be stored
+app.config["UPLOAD_FOLDER"] = os.path.join(BASE_DIR, 'uploads') 
+# ------------------------------------
+
 # Secret key for session signing. In production, set SECRET_KEY in the environment.
 app.secret_key = os.environ.get('SECRET_KEY', 'dev_secret_key')
 # Also set the config key (some extensions read this)
@@ -36,5 +46,8 @@ migrate = Migrate(app, db)
 # Instantiate REST API
 api = Api(app)
 
-# Instantiate C
+# Instantiate CORS
 CORS(app, supports_credentials=True)
+
+# Note: You should ensure the directory defined by UPLOAD_FOLDER ('./uploads' 
+# relative to your config.py) is created and writable by your server process.
