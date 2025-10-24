@@ -4,8 +4,6 @@ import background from '../assets/backround image.png';
 import { FaEnvelope } from "react-icons/fa";
 import { IoMdLock } from "react-icons/io";
 
-
-
 const SignupPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,14 +12,44 @@ const SignupPage = () => {
   const [showPasswordPlaceholder, setShowPasswordPlaceholder] = useState(true);
   const [showVerifyPasswordPlaceholder, setShowVerifyPasswordPlaceholder] = useState(true);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Logic for handling sign up submission goes here
-    console.log('Sign up attempt submitted');
+
+    if (password !== verifyPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://127.0.0.1:5555/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include", // ✅ important for session cookies
+        body: JSON.stringify({
+          email,
+          password,
+          username: email.split("@")[0], // use part of email as username
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        alert(errorData.error || "Signup failed");
+        return;
+      }
+
+      const data = await res.json();
+      console.log("Signup success:", data);
+      alert("Signup successful!");
+      window.location.href = "/login"; // redirect to login
+    } catch (err) {
+      console.error("Signup error:", err);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
   return (
-    <div 
+    <div
       className="min-h-screen flex items-center justify-center p-4"
       style={{
         backgroundImage: `url(${background})`,
@@ -30,18 +58,12 @@ const SignupPage = () => {
         backgroundRepeat: 'no-repeat',
       }}
     >
-      {/* Container size matched to the large size requested for the Login page */}
       <div className="w-full max-w-3xl bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl shadow-2xl overflow-hidden">
-        
-        {/* Header/Title Bar (Dark Blue) - Logo Removed */}
-        
-
         <div className="bg-[#224266] text-white px-12 py-3 flex items-center">
           <img src={logo} alt="Logo" className="h-8 w-8 mr-3" />
           <span className="font-bold text-lg">Disaster Connect</span>
         </div>
 
-        {/* Form Content */}
         <div className="p-12">
           <h2 className="text-2xl font-semibold text-gray-800 mb-2 text-center">
             Sign up now
@@ -49,12 +71,11 @@ const SignupPage = () => {
           <p className="text-gray-500 mb-8 text-center">
             Create a free account
           </p>
-          
+
           <form onSubmit={handleSubmit} className="space-y-6">
-            
-            {/* Email Address Input */}
+            {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 sr-only">Email address</label>
+              <label htmlFor="email" className="sr-only">Email address</label>
               <div className="relative">
                 <input
                   type="email"
@@ -68,19 +89,17 @@ const SignupPage = () => {
                   onFocus={() => setShowEmailPlaceholder(false)}
                   onBlur={() => setShowEmailPlaceholder(email === '')}
                   required
-                  className="w-full pr-12 pl-4 py-4 text-lg font-normal bg-gray-200 border-2 border-gray-300 rounded-[24px] focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+                  className="w-full pr-12 pl-4 py-4 text-lg bg-gray-200 border-2 border-gray-300 rounded-[24px] focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
                 />
-
-                {/* Envelope icon positioned on the right side of the input */}
                 <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500">
                   <FaEnvelope className="w-5 h-5" />
                 </span>
               </div>
             </div>
-            
-            {/* Password Input */}
+
+            {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 sr-only">Password</label>
+              <label htmlFor="password" className="sr-only">Password</label>
               <div className="relative">
                 <input
                   type="password"
@@ -94,16 +113,15 @@ const SignupPage = () => {
                   onFocus={() => setShowPasswordPlaceholder(false)}
                   onBlur={() => setShowPasswordPlaceholder(password === '')}
                   required
-                  className="w-full pr-12 p-4 text-lg font-normal bg-gray-200 border-2 border-gray-300 rounded-[24px] focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+                  className="w-full pr-12 p-4 text-lg bg-gray-200 border-2 border-gray-300 rounded-[24px] focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
                 />
-                {/* Lock icon for Password */}
                 <IoMdLock className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-6 h-6" />
               </div>
             </div>
-            
-            {/* Verify Password Input */}
+
+            {/* Verify Password */}
             <div>
-              <label htmlFor="verify-password" className="block text-sm font-medium text-gray-700 sr-only">Verify password</label>
+              <label htmlFor="verify-password" className="sr-only">Verify password</label>
               <div className="relative">
                 <input
                   type="password"
@@ -117,14 +135,13 @@ const SignupPage = () => {
                   onFocus={() => setShowVerifyPasswordPlaceholder(false)}
                   onBlur={() => setShowVerifyPasswordPlaceholder(verifyPassword === '')}
                   required
-                  className="w-full pr-12 p-4 text-lg font-normal bg-gray-200 border-2 border-gray-300 rounded-[24px] focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+                  className="w-full pr-12 p-4 text-lg bg-gray-200 border-2 border-gray-300 rounded-[24px] focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
                 />
-                <IoMdLock  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-6 h-6"/>
-
+                <IoMdLock className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-6 h-6" />
               </div>
             </div>
-            
-            {/* Sign Up Button */}
+
+            {/* Submit */}
             <button
               type="submit"
               className="w-full py-4 bg-[#224266] text-white font-bold text-xl rounded-xl hover:bg-[#1d3756] focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-150 mt-8"
@@ -133,7 +150,7 @@ const SignupPage = () => {
             </button>
           </form>
 
-          {/* Login Link */}
+          {/* Login link */}
           <div className="mt-8 text-center text-base">
             <p className="text-gray-600">
               Already have an account?{' '}
