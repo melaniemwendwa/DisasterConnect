@@ -2,20 +2,32 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import DashboardLayout from "./components/DashboardLayout";
 import Home from "./pages/Home";
 import ReportForm from "./pages/ReportForm";
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Dashboard from "./pages/Dashboard";
 
 function AppContent() {
   const location = useLocation();
 
   const showFooterPaths = ["/", "/report", "/home"];
   const showNavbarPaths = ["/report", "/home"];
+  const isDashboardPath = location.pathname === "/dashboard";
 
   const shouldShowFooter = showFooterPaths.includes(location.pathname);
   const shouldShowNavbar = showNavbarPaths.includes(location.pathname);
+
+  // If it's the dashboard path, use DashboardLayout
+  if (isDashboardPath) {
+    return (
+      <DashboardLayout>
+        <Dashboard />
+      </DashboardLayout>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen">

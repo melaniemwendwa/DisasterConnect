@@ -9,7 +9,7 @@ export default function Navbar() {
         <h1 className="font-bold text-lg">DisasterConnect</h1>
       </div>
       <div className="space-x-4">
-        <Link to="/">Home</Link>
+        <Link to="/home">Home</Link>
         <Link to="/report">Report</Link>
         <Link to="/dashboard">Dashboard</Link>
         <Link to="/login">Profile</Link>
