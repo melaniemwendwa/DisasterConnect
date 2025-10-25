@@ -79,7 +79,7 @@ const LoginPage = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                className="w-full p-4 text-lg bg-gray-200 border border-gray-300 rounded-[24px] text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150"
+                className="w-full p-4 text-lg bg-gray-200 border border-gray-300 rounded-[24px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150"
               />
             </div>
             
@@ -96,7 +96,7 @@ const LoginPage = () => {
                 onFocus={() => setShowPasswordPlaceholder(false)}
                 onBlur={() => setShowPasswordPlaceholder(password === '')}
                 required
-                className="w-full p-4 text-lg bg-gray-200 border border-gray-300 rounded-[24px] text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150"
+                className="w-full p-4 text-lg bg-gray-200 border border-gray-300 rounded-[24px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150"
               />
             </div>
             
@@ -107,6 +107,13 @@ const LoginPage = () => {
             >
               Login
             </button>
+
+            {/* Forgot Password Link */}
+            <div className="text-right">
+              <a href="#" className="text-[#224266] hover:text-[#1d3756] text-sm transition duration-150">
+                Forgot Password?
+              </a>
+            </div>
 
             {error && (
               <div className="mt-4 text-red-500 text-sm text-center bg-red-50 p-3 rounded-[24px] border border-red-200">
