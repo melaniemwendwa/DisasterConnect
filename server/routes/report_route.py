@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename
 from models import  Report, User
 import os
 from config import api, db
+from datetime import datetime, date, timezone
 
 def classify_severity(description):
     description = description.lower()
@@ -81,18 +82,66 @@ class ReportByID(Resource):
         if not report:
             return make_response({"error": "Report not found"}, 404)
         return make_response(report.to_dict(), 200)
+   
     def patch(self, id):
         report = Report.query.get(id)
         if not report:
             return make_response({"error": "Report not found"}, 404)
 
-        data = request.get_json()
+        # Use silent=True to avoid BadRequest if body is empty/malformed
+        data = request.get_json(silent=True) or {}
+
+        # DEBUG: log what we received (remove once fixed)
+        print("[PATCH /reports/<id>] received payload:", data)
+
+        # Handle DateTime parsing
+        if "date" in data:
+            raw_date = data.get("date")
+            if raw_date in (None, "", "null"):
+                report.date = None
+            elif isinstance(raw_date, (datetime, date)):
+                # If a Python object sneaks through
+                if isinstance(raw_date, datetime):
+                    report.date = raw_date if raw_date.tzinfo else raw_date.replace(tzinfo=timezone.utc)
+                else:
+                    # date -> datetime at midnight UTC
+                    report.date = datetime(raw_date.year, raw_date.month, raw_date.day, tzinfo=timezone.utc)
+            elif isinstance(raw_date, str):
+                parsed_dt = None
+                # Normalize Z (Zulu) to +00:00 for fromisoformat
+                iso_candidate = raw_date.replace("Z", "+00:00") if raw_date.endswith("Z") else raw_date
+                # Try ISO first
+                try:
+                    parsed_dt = datetime.fromisoformat(iso_candidate)
+                except Exception:
+                    # Try plain YYYY-MM-DD
+                    try:
+                        d = datetime.strptime(raw_date, "%Y-%m-%d").date()
+                        parsed_dt = datetime(d.year, d.month, d.day)
+                    except Exception:
+                        return make_response(
+                            {"error": "Invalid date format. Use YYYY-MM-DD or ISO8601."}, 400
+                        )
+                # Ensure timezone-aware (UTC) to match your model’s default style
+                report.date = parsed_dt if parsed_dt.tzinfo else parsed_dt.replace(tzinfo=timezone.utc)
+            else:
+                # Unknown type
+                return make_response({"error": "Invalid date value."}, 400)
+
+            # Prevent raw string from being set later
+            data.pop("date", None)
+
+        # Optional: keep severity consistent with POST when description changes
+        if "description" in data and isinstance(data["description"], str):
+            report.severity = classify_severity(data["description"])
+
+        # Apply other fields (includes reporter_name, type, location, etc.)
         for key, value in data.items():
             setattr(report, key, value)
 
         db.session.commit()
         return make_response(report.to_dict(), 200)
-    
+
     def delete(self, id):
         report = Report.query.get(id)
         if not report:

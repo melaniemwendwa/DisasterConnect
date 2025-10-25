@@ -9,6 +9,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/UserContext.jsx";
 import EditReport from "../pages/EditReport.jsx";
 import ReportDetail from "../pages/ReportDetail.jsx"
+import EditReport from "../pages/EditReport.jsx";
 
 
 const ProtectedRoute = ({ children }) => {
@@ -47,7 +48,7 @@ const routes = [
         ),
       },
       {
-        path: "/projects/:id",
+        path: "/reports/:id",
         element: (
           <ProtectedRoute>
             <ReportDetail />
@@ -67,7 +68,7 @@ const routes = [
         element: <Signup />,
       },
       {
-        path: "/projects/:id/edit",
+        path: "/reports/:id/edit",
         element:(
           <ProtectedRoute>
             <EditReport/>
