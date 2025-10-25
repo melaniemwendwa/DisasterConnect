@@ -3,6 +3,7 @@ import Home from "../pages/Home.jsx";
 import Login from "../pages/Login.jsx"; 
 import Dashboard from "../pages/Dashboard.jsx";
 import ReportForm from "../pages/ReportForm.jsx";
+import DonationForm from "../pages/DonationForm.jsx";
 import Signup from "../pages/Signup.jsx";
 import LandingPage from "../pages/Landingpage.jsx";
 import { Navigate } from "react-router-dom";
@@ -62,6 +63,10 @@ const routes = [
             <ReportForm />
           </ProtectedRoute>
         ),
+      },
+      {
+        path: "/donate",
+        element: <DonationForm />,
       },
       {
         path: "/signup",

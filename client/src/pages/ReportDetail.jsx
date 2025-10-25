@@ -5,7 +5,7 @@ import Api, { BASE_URL } from "../Services/api";
 
 // Update these helpers to match your app's routes if different
 const EDIT_ROUTE = (id) => `/reports/${id}/edit`; // e.g., '/reports/:id/edit' => (id) => `/reports/${id}/edit`
-const DONATE_ROUTE = (id) => `/donations/new?reportId=${id}`; // or (id) => `/reports/${id}/donate`
+const DONATE_ROUTE = (id) => `/donate?reportId=${id}`; // navigates to donation form with optional reportId
 
 export default function ReportDetail() {
   const { id } = useParams();

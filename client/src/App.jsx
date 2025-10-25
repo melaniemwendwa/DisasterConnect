@@ -5,6 +5,7 @@ import Footer from "./components/Footer";
 import DashboardLayout from "./components/DashboardLayout";
 import Home from "./pages/Home";
 import ReportForm from "./pages/ReportForm";
+import DonationForm from "./pages/DonationForm";
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -15,8 +16,8 @@ import EditReport from "./pages/EditReport";
 function AppContent() {
   const location = useLocation();
 
-  const showFooterPaths = ["/", "/report", "/home"];
-  const showNavbarPaths = ["/report", "/home"];
+  const showFooterPaths = ["/", "/report", "/home", "/donate"];
+  const showNavbarPaths = ["/report", "/home", "/donate"];
   const isDashboardPath = location.pathname === "/dashboard";
 
   const shouldShowFooter = showFooterPaths.includes(location.pathname);
@@ -40,6 +41,7 @@ function AppContent() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/report" element={<ReportForm />} />
+          <Route path="/donate" element={<DonationForm />} />
           <Route path="/home" element={<Home />} />
           <Route path="/reports/:id" element={<ReportDetail />} />
           <Route path="/reports/:id/edit" element={<EditReport />} />

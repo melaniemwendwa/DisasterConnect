@@ -10,7 +10,7 @@ export default function Navbar() {
       </div>
       <div className="space-x-4">
         <Link to="/home">Home</Link>
-        <Link to="/report">Report</Link>
+  <Link to="/report">Report</Link>
         <Link to="/dashboard">Dashboard</Link>
         <Link to="/login">Profile</Link>
       </div>
