@@ -9,6 +9,8 @@ import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
+import ReportDetail  from "./pages/ReportDetail";
+import EditReport from "./pages/EditReport";
 
 function AppContent() {
   const location = useLocation();
@@ -39,6 +41,8 @@ function AppContent() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/report" element={<ReportForm />} />
           <Route path="/home" element={<Home />} />
+          <Route path="/reports/:id" element={<ReportDetail />} />
+          <Route path="/reports/:id/edit" element={<EditReport />} />
         </Routes>
       </main>
 
