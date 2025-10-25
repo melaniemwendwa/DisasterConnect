@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 // 1. **FIXED: Ensure this line is active and correct**
 import Api, { BASE_URL } from '../Services/api'; // import base URL to build image URLs
 // You may also need to get the BASE_URL if your Api file exports it
@@ -26,6 +27,7 @@ const getPriorityClasses = (severity) => {
 };
 
 const ReportCard = ({ report }) => {
+  const navigate = useNavigate();
   const { priority, priorityClass, borderClass } = getPriorityClasses(report.severity);
   
   // Build a usable image URL. The backend stores images as "/uploads/<filename>".
@@ -40,9 +42,16 @@ const ReportCard = ({ report }) => {
       imageUrl = `${BASE_URL}/${report.image}`;
     }
   }
+
+  const handleCardClick = () => {
+    navigate(`/reports/${report.id}`);
+  };
   
   return (
-    <div className={`flex justify-between items-start p-5 mb-5 bg-white shadow-md rounded-lg border-l-4 ${borderClass}`}>
+    <div 
+      onClick={handleCardClick}
+      className={`flex justify-between items-start p-5 mb-5 bg-white shadow-md rounded-lg border-l-4 ${borderClass} cursor-pointer hover:shadow-lg transition-shadow duration-200`}
+    >
       
       {/* Report Content (Left Side) */}
       <div className="flex-grow pr-5">
