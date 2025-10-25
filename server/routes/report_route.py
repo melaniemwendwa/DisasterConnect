@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask import request, jsonify, make_response, current_app, session
 from werkzeug.utils import secure_filename
-from models import  Report, User
+from models import  Report, User, Donation
 import os
 from config import api, db
 from datetime import datetime, date, timezone
@@ -88,10 +88,36 @@ class ReportByID(Resource):
         if not report:
             return make_response({"error": "Report not found"}, 404)
 
-        # Use silent=True to avoid BadRequest if body is empty/malformed
-        data = request.get_json(silent=True) or {}
+        # Check if request is FormData (with file) or JSON
+        is_form_data = request.content_type and 'multipart/form-data' in request.content_type
+        
+        if is_form_data:
+            # Handle FormData with potential image upload
+            data = {}
+            for key in ['reporter_name', 'type', 'location', 'description']:
+                val = request.form.get(key)
+                if val:
+                    data[key] = val
+            
+            # Handle date from form
+            date_str = request.form.get('date')
+            if date_str:
+                data['date'] = date_str
+            
+            # Handle image upload
+            image = request.files.get('image')
+            if image:
+                upload_folder = current_app.config["UPLOAD_FOLDER"]
+                os.makedirs(upload_folder, exist_ok=True)
+                filename = secure_filename(image.filename)
+                image_path = os.path.join(upload_folder, filename)
+                image.save(image_path)
+                data['image'] = f"/uploads/{filename}"
+        else:
+            # Handle JSON payload
+            data = request.get_json(silent=True) or {}
 
-        # DEBUG: log what we received (remove once fixed)
+        # DEBUG: log what we received
         print("[PATCH /reports/<id>] received payload:", data)
 
         # Handle DateTime parsing
@@ -151,8 +177,48 @@ class ReportByID(Resource):
         db.session.commit()
         return make_response({"message": "Report deleted"}, 200)
 
+class ReportDonations(Resource):
+    def get(self, id):
+        """List all donations for a report."""
+        report = Report.query.get(id)
+        if not report:
+            return make_response({"error": "Report not found"}, 404)
+        return make_response(jsonify([d.to_dict() for d in report.donations]), 200)
+
+    def post(self, id):
+        """Create a donation for a report."""
+        report = Report.query.get(id)
+        if not report:
+            return make_response({"error": "Report not found"}, 404)
+
+        data = request.get_json(silent=True) or {}
+        full_name = data.get("full_name")
+        email = data.get("email")
+        phone = data.get("phone")
+        d_type = data.get("type")
+        amount = data.get("amount")
+        amount_number = data.get("amount_number")
+
+        if not full_name or not email or not phone or not d_type or not amount:
+            return make_response(
+                {"error": "full_name, email, phone, type, and amount are required"}, 400
+            )
+
+        donation = Donation(
+            report_id=id,
+            full_name=full_name,
+            email=email,
+            phone=phone,
+            type=d_type,
+            amount=amount,
+            amount_number=amount_number,
+        )
+        db.session.add(donation)
+        db.session.commit()
+
+        return make_response(donation.to_dict(), 201)
+
+
 api.add_resource(Reports, '/reports')
 api.add_resource(ReportByID, '/reports/<int:id>')
-
-
-
+api.add_resource(ReportDonations, '/reports/<int:id>/donations')

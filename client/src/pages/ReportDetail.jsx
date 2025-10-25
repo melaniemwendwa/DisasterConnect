@@ -102,10 +102,10 @@ export default function ReportDetail() {
         </div>
       </div>
 
-      {/* Main layout: content + sidebar */}
-      <div className="grid gap-8 lg:grid-cols-[1fr,320px]">
-        {/* Left: content */}
-        <div>
+      {/* Main layout: content + sidebar - always side by side */}
+      <div className="flex gap-4 md:gap-8">
+        {/* Left: content - takes remaining space */}
+        <div className="flex-1 min-w-0">
           {/* Hero image */}
           {imageUrl ? (
             <div className="w-full overflow-hidden rounded-md shadow-sm">
@@ -155,14 +155,14 @@ export default function ReportDetail() {
           </div>
         </div>
 
-        {/* Right: sidebar donations */}
-        <aside className="lg:pl-4">
+        {/* Right: sidebar donations - fixed width, always on right */}
+        <aside className="w-[240px] md:w-[280px] lg:w-[320px] flex-shrink-0">
           <h2 className="text-base font-semibold text-slate-800">Donations</h2>
-          <ul className="mt-4 space-y-6">
+          <ul className="mt-4 space-y-4">
             {(report.donations || []).map((d, idx) => (
               <li key={idx} className="text-sm text-slate-700">
                 <span className="font-medium">
-                  {d.name || d.donor_name || "Donor"}
+                  {d.name || d.full_name || d.donor_name || "Donor"}
                 </span>
                 <span className="text-slate-500">
                   {" - "}

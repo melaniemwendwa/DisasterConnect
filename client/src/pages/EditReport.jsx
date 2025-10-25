@@ -23,6 +23,8 @@ export default function EditReport() {
   const [initialValues, setInitialValues] = useState(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
+  const [newImage, setNewImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
     let mounted = true;
@@ -54,16 +56,30 @@ export default function EditReport() {
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
-      const payload = {
-        reporter_name: values.reporter_name,
-        type: values.type,
-        location: values.location,
-        date: values.date || null, // server should parse "YYYY-MM-DD" to date/datetime
-        description: values.description,
-        // image change not handled here (PATCH is JSON)
-      };
+      // If there's a new image, use FormData; otherwise use JSON
+      if (newImage) {
+        const formData = new FormData();
+        formData.append('reporter_name', values.reporter_name);
+        formData.append('type', values.type);
+        formData.append('location', values.location);
+        formData.append('date', values.date || '');
+        formData.append('description', values.description);
+        formData.append('image', newImage);
 
-      await Api.patch(`/reports/${id}`, payload);
+        await Api.patch(`/reports/${id}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+      } else {
+        const payload = {
+          reporter_name: values.reporter_name,
+          type: values.type,
+          location: values.location,
+          date: values.date || null,
+          description: values.description,
+        };
+        await Api.patch(`/reports/${id}`, payload);
+      }
+
       navigate(`/reports/${id}`);
     } catch (e) {
       console.error(e);
@@ -71,6 +87,23 @@ export default function EditReport() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setNewImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveNewImage = () => {
+    setNewImage(null);
+    setImagePreview(null);
   };
 
   if (loading) {
@@ -181,22 +214,65 @@ export default function EditReport() {
                 <ErrorMessage name="description" component="div" className="text-red-500 text-sm" />
               </div>
 
-              {previewSrc && (
-                <div>
-                  <label className="block font-medium mb-2">Current Image</label>
-                  <img
-                    src={previewSrc}
-                    alt="Current"
-                    className="w-full h-100 object-cover rounded-xl border"
-                    onError={(e) => {
-                      e.currentTarget.src = "https://via.placeholder.com/600x400?text=No+Image";
-                    }}
+              {/* Image Upload Section */}
+              <div>
+                <label className="block font-medium mb-2">Image</label>
+                
+                {/* Show new image preview if selected, otherwise show current image */}
+                {imagePreview ? (
+                  <div className="relative">
+                    <img
+                      src={imagePreview}
+                      alt="New preview"
+                      className="w-full h-64 object-cover rounded-xl border"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveNewImage}
+                      className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
+                    >
+                      Remove New Image
+                    </button>
+                    <p className="text-sm text-green-600 mt-2">✓ New image selected</p>
+                  </div>
+                ) : previewSrc ? (
+                  <div>
+                    <img
+                      src={previewSrc}
+                      alt="Current"
+                      className="w-full h-64 object-cover rounded-xl border mb-3"
+                      onError={(e) => {
+                        e.currentTarget.src = "https://via.placeholder.com/600x400?text=No+Image";
+                      }}
+                    />
+                    <p className="text-sm text-gray-500 mb-3">Current image</p>
+                  </div>
+                ) : (
+                  <div className="w-full h-64 bg-gray-100 rounded-xl border mb-3 flex items-center justify-center">
+                    <span className="text-gray-400">No image</span>
+                  </div>
+                )}
+
+                {/* Upload new image button */}
+                <div className="flex items-center gap-3">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                    id="image-upload"
                   />
-                  <p className="text-sm text-gray-500 mt-2">
-                    Image change is not supported in this form.
-                  </p>
+                  <label
+                    htmlFor="image-upload"
+                    className="cursor-pointer inline-flex items-center px-4 py-2 rounded-lg border border-[#224266] text-[#224266] hover:bg-[#224266] hover:text-white transition"
+                  >
+                    {imagePreview ? 'Change Image' : 'Upload New Image'}
+                  </label>
+                  {imagePreview && (
+                    <span className="text-sm text-gray-600">{newImage?.name}</span>
+                  )}
                 </div>
-              )}
+              </div>
 
               {/* Hidden submit so the top Save button can trigger form submission */}
               <button type="submit" disabled={isSubmitting} className="hidden">

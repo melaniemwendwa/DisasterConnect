@@ -12,7 +12,7 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-[#224266] text-white min-h-screen p-6 flex flex-col">
+    <aside className="w-64 bg-[#224266] text-white h-screen p-6 flex flex-col sticky top-0 overflow-y-auto">
       {/* Logo and Brand */}
       <div className="flex items-center mb-10">
         <img src={logo} alt="Logo" className="h-10 mr-3" />

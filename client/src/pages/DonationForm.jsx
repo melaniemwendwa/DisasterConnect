@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import background from "../assets/backround image.png";
 import Api from "../Services/api";
 
 export default function DonationForm() {
+	const [params] = useSearchParams();
+	const reportId = params.get("reportId");
+	const navigate = useNavigate();
 	const [message, setMessage] = useState("");
 
 	const validationSchema = Yup.object({
@@ -41,10 +45,19 @@ export default function DonationForm() {
 			const amount_number = !isNaN(parsed) && isFinite(parsed) ? parsed : null;
 			const payload = { ...values, amount: String(values.amount), amount_number };
 
-			const res = await Api.post("/donations", payload);
+			// If reportId is present, POST to /reports/:id/donations; otherwise fallback to /donations
+			const endpoint = reportId ? `/reports/${reportId}/donations` : "/donations";
+			const res = await Api.post(endpoint, payload, {
+				headers: { "Content-Type": "application/json" },
+			});
+
 			if (res.status === 201 || res.status === 200) {
 				setMessage("Donation submitted successfully!");
 				resetForm();
+				// Navigate back to report detail if reportId exists
+				if (reportId) {
+					setTimeout(() => navigate(`/reports/${reportId}`), 1500);
+				}
 			} else {
 				setMessage("Failed to submit donation. Try again.");
 			}

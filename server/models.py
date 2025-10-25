@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Float, ForeignKey
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy_serializer import SerializerMixin
 from datetime import datetime, timezone
@@ -47,10 +47,42 @@ class Report(db.Model, SerializerMixin):
     user_id = db.Column(Integer, ForeignKey('users.id'))
     user = relationship('User', back_populates='reports')
 
-    serialize_rules = ("-user.reports",)
+    # Donations relationship
+    donations = db.relationship('Donation', back_populates='report', cascade="all, delete-orphan", lazy='selectin')
+
+    serialize_rules = ("-user.reports", "-donations.report")
 
     @validates('type')
     def validate_type(self, key, value):
         if not value or len(value) < 3:
             raise ValueError('Type must be at least 3 characters long')
         return value
+
+
+class Donation(db.Model, SerializerMixin):
+    __tablename__ = 'donations'
+
+    id = db.Column(Integer, primary_key=True)
+    report_id = db.Column(Integer, ForeignKey('reports.id'), nullable=False)
+    full_name = db.Column(String, nullable=False)
+    email = db.Column(String, nullable=False)
+    phone = db.Column(String, nullable=False)
+    type = db.Column(String, nullable=False)  # e.g., "Money", "Food"
+    amount = db.Column(String, nullable=False)  # can be text or number
+    amount_number = db.Column(Float, nullable=True)  # numeric if provided
+    created_at = db.Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    report = relationship('Report', back_populates='donations')
+
+    serialize_rules = ("-report.donations",)
+    
+    # Override SerializerMixin's to_dict to return 'name' instead of 'full_name'
+    def to_dict(self, **kwargs):
+        base = super().to_dict(**kwargs)
+        # Replace full_name with name for frontend compatibility
+        if 'full_name' in base:
+            base['name'] = base.pop('full_name')
+        return base
+
+    def __repr__(self):
+        return f"<Donation {self.id} by {self.full_name} for Report {self.report_id}>"
