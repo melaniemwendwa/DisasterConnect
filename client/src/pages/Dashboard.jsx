@@ -2,6 +2,18 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Api, { BASE_URL } from "../Services/api";
 import { useAuth } from "../context/AuthContext";
+import { LiaClipboardListSolid } from "react-icons/lia";
+import { MdCreate } from "react-icons/md";
+import { FaDonate } from "react-icons/fa"; 
+import { FaExclamationCircle } from "react-icons/fa"; 
+import { FaLocationDot } from "react-icons/fa6";
+import { PiCalendarDotsThin } from "react-icons/pi";
+import { FaTrash } from "react-icons/fa";
+import { MdDescription } from "react-icons/md"; 
+
+
+
+
 
 export default function Dashboard() {
   const [reports, setReports] = useState([]);
@@ -19,10 +31,14 @@ export default function Dashboard() {
   const fetchReports = async () => {
     try {
       setLoading(true);
-      const response = await Api.get("/reports");
+      const response = await Api.get("/reports/my-reports");
       setReports(response.data);
     } catch (error) {
       console.error("Error fetching reports:", error);
+      if (error.response?.status === 401) {
+        // User not logged in, redirect to login
+        navigate("/login");
+      }
     } finally {
       setLoading(false);
     }
@@ -69,13 +85,37 @@ export default function Dashboard() {
     }
   };
 
-  const filteredReports = reports.filter((report) => {
+  // Build proper image URL
+  const getImageUrl = (image) => {
+    if (!image) return null;
+    if (image.startsWith('http') || image.startsWith('//')) {
+      return image;
+    } else if (image.startsWith('/')) {
+      return `${BASE_URL}${image}`;
+    } else {
+      return `${BASE_URL}/${image}`;
+    }
+  };
+
+  // Separate reports into created and donated
+  const createdReports = reports.filter((report) => report.user_id === user?.id);
+  const donatedReports = reports.filter((report) => report.user_id !== user?.id);
+
+  // Apply filter to both categories
+  const filteredCreatedReports = createdReports.filter((report) => {
+    if (filter === "all") return true;
+    return report.severity?.toLowerCase() === filter.toLowerCase();
+  });
+
+  const filteredDonatedReports = donatedReports.filter((report) => {
     if (filter === "all") return true;
     return report.severity?.toLowerCase() === filter.toLowerCase();
   });
 
   const stats = {
     total: reports.length,
+    created: createdReports.length,
+    donated: donatedReports.length,
     severe: reports.filter((r) => r.severity?.toLowerCase() === "severe").length,
     moderate: reports.filter((r) => r.severity?.toLowerCase() === "moderate").length,
     minor: reports.filter((r) => r.severity?.toLowerCase() === "minor").length,
@@ -85,19 +125,37 @@ export default function Dashboard() {
     <div className="p-8 bg-gray-50 min-h-screen">
       {/* Header Section */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Dashboard</h1>
-        <p className="text-gray-600">View and manage all disaster reports</p>
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">My Dashboard</h1>
+        <p className="text-gray-600">View and manage your disaster reports and donations</p>
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
         <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-500 text-sm font-medium">Total Reports</p>
               <p className="text-3xl font-bold text-gray-800 mt-2">{stats.total}</p>
             </div>
-            <div className="text-4xl">📋</div>
+            <div className="text-4xl"><LiaClipboardListSolid /></div>
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-purple-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-500 text-sm font-medium">Created</p>
+              <p className="text-3xl font-bold text-gray-800 mt-2">{stats.created}</p>
+            </div>
+            <div className="text-4xl text-blue-500"><MdDescription /></div>
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-teal-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-500 text-sm font-medium">Donated</p>
+              <p className="text-3xl font-bold text-gray-800 mt-2">{stats.donated}</p>
+            </div>
+            <div className="text-4xl" ><FaDonate /></div>
           </div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-red-500">
@@ -106,7 +164,7 @@ export default function Dashboard() {
               <p className="text-gray-500 text-sm font-medium">Severe</p>
               <p className="text-3xl font-bold text-gray-800 mt-2">{stats.severe}</p>
             </div>
-            <div className="text-4xl">🚨</div>
+            <div className="text-4xl text-red-500"><FaExclamationCircle /></div>
           </div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-yellow-500">
@@ -115,7 +173,7 @@ export default function Dashboard() {
               <p className="text-gray-500 text-sm font-medium">Moderate</p>
               <p className="text-3xl font-bold text-gray-800 mt-2">{stats.moderate}</p>
             </div>
-            <div className="text-4xl">⚠️</div>
+            <div className="text-4xl text-yellow-500"><FaExclamationCircle /></div>
           </div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
@@ -124,7 +182,7 @@ export default function Dashboard() {
               <p className="text-gray-500 text-sm font-medium">Minor</p>
               <p className="text-3xl font-bold text-gray-800 mt-2">{stats.minor}</p>
             </div>
-            <div className="text-4xl">✅</div>
+            <div className="text-4xl text-green-500"><FaExclamationCircle /></div>
           </div>
         </div>
       </div>
@@ -176,24 +234,22 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Reports Grid */}
+      {/* Reports Sections */}
       {loading ? (
         <div className="flex justify-center items-center h-64">
           <div className="text-gray-500 text-xl">Loading reports...</div>
         </div>
-      ) : filteredReports.length === 0 ? (
-        <div className="bg-white p-12 rounded-lg shadow-md text-center">
-          <div className="text-6xl mb-4">📭</div>
-          <h3 className="text-xl font-semibold text-gray-700 mb-2">
-            No Reports Found
-          </h3>
-          <p className="text-gray-500">
-            There are no reports matching your filter criteria.
-          </p>
-        </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredReports.map((report) => (
+        <>
+          {/* My Created Reports Section */}
+          {filteredCreatedReports.length > 0 && (
+            <div className="mb-12">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">My Reports</h2>
+                <p className="text-gray-600">Reports you have created</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredCreatedReports.map((report) => (
             <div
               key={report.id}
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
@@ -202,7 +258,7 @@ export default function Dashboard() {
               {report.image && (
                 <div className="h-48 bg-gray-200 overflow-hidden">
                   <img
-                    src={`${BASE_URL}${report.image}`}
+                    src={getImageUrl(report.image)}
                     alt={report.type}
                     className="w-full h-full object-cover"
                     onError={(e) => {
@@ -233,7 +289,7 @@ export default function Dashboard() {
 
                 <div className="space-y-2 mb-4 text-sm">
                   <div className="flex items-center text-gray-500">
-                    <span className="mr-2">📍</span>
+                    <span className="mr-2 text-blue-500"><FaLocationDot /></span>
                     <span className="font-medium">{report.location}</span>
                   </div>
                   <div className="flex items-center text-gray-500">
@@ -241,7 +297,7 @@ export default function Dashboard() {
                     <span>{report.reporter_name || "Anonymous"}</span>
                   </div>
                   <div className="flex items-center text-gray-500">
-                    <span className="mr-2">📅</span>
+                    <span className="mr-2 text-blue-400"><PiCalendarDotsThin /></span>
                     <span>
                       {new Date(report.date).toLocaleDateString("en-US", {
                         year: "numeric",
@@ -263,17 +319,117 @@ export default function Dashboard() {
                   {canModifyReport(report) && (
                     <button
                       onClick={() => handleDelete(report.id)}
-                      className="px-4 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition-colors text-sm font-medium"
+                      className="px-4 bg-white-500 text-white-500 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm font-medium"
                       title="Delete report"
                     >
-                      🗑️
+                      <FaTrash />
+
                     </button>
                   )}
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Donated Incidents Section */}
+          {filteredDonatedReports.length > 0 && (
+            <div className="mb-12">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">Donated Incidents</h2>
+                <p className="text-[#224266]-600">Reports you have donated to</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredDonatedReports.map((report) => (
+                  <div
+                    key={report.id}
+                    className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                  >
+                    {/* Image Section */}
+                    {report.image && (
+                      <div className="h-48 bg-gray-200 overflow-hidden">
+                        <img
+                          src={getImageUrl(report.image)}
+                          alt={report.type}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.src = "https://via.placeholder.com/400x300?text=No+Image";
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    {/* Content Section */}
+                    <div className="p-5">
+                      <div className="flex justify-between items-start mb-3">
+                        <h3 className="text-xl font-bold text-gray-800 capitalize">
+                          {report.type}
+                        </h3>
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-semibold border ${getSeverityColor(
+                            report.severity
+                          )}`}
+                        >
+                          {report.severity}
+                        </span>
+                      </div>
+
+                      <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                        {report.description}
+                      </p>
+
+                      <div className="space-y-2 mb-4 text-sm">
+                        <div className="flex items-center text-gray-500">
+                          <span className="mr-2">📍</span>
+                          <span className="font-medium">{report.location}</span>
+                        </div>
+                        <div className="flex items-center text-gray-500">
+                          <span className="mr-2">👤</span>
+                          <span>{report.reporter_name || "Anonymous"}</span>
+                        </div>
+                        <div className="flex items-center text-gray-500">
+                          <span className="mr-2">📅</span>
+                          <span>
+                            {new Date(report.date).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => navigate(`/reports/${report.id}`)}
+                          className="flex-1 bg-[#224266] text-white py-2 rounded-lg hover:bg-[#2d5580] transition-colors text-sm font-medium"
+                        >
+                          View Details
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* No Reports Message */}
+          {filteredCreatedReports.length === 0 && filteredDonatedReports.length === 0 && (
+            <div className="bg-white p-12 rounded-lg shadow-md text-center">
+              <div className="text-6xl mb-4">📭</div>
+              <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                No Reports Found
+              </h3>
+              <p className="text-gray-500">
+                There are no reports matching your filter criteria.
+              </p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

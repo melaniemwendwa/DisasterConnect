@@ -196,6 +196,42 @@ class ReportByID(Resource):
         db.session.commit()
         return make_response({"message": "Report deleted"}, 200)
 
+class UserReports(Resource):
+    def get(self):
+        """Get reports created by the user OR reports they donated to."""
+        user_id = session.get("user_id")
+        if not user_id:
+            return make_response({"error": "Unauthorized. Please log in."}, 401)
+        
+        user = User.query.get(user_id)
+        if not user:
+            return make_response({"error": "User not found"}, 404)
+        
+        # Get reports created by the user
+        created_reports = Report.query.filter_by(user_id=user_id).all()
+        created_report_ids = {r.id for r in created_reports}
+        
+        # Get reports the user donated to (by matching email - case insensitive)
+        # Use func.lower for case-insensitive comparison
+        from sqlalchemy import func
+        donations = Donation.query.filter(func.lower(Donation.email) == func.lower(user.email)).all()
+        donated_report_ids = {d.report_id for d in donations}
+        
+        # Debug logging
+        print(f"[UserReports] User email: {user.email}")
+        print(f"[UserReports] Created report IDs: {created_report_ids}")
+        print(f"[UserReports] Donations found: {len(donations)}")
+        print(f"[UserReports] Donated report IDs: {donated_report_ids}")
+        
+        # Combine both sets of report IDs
+        all_report_ids = created_report_ids.union(donated_report_ids)
+        
+        # Fetch all reports
+        reports = Report.query.filter(Report.id.in_(all_report_ids)).all() if all_report_ids else []
+        
+        return make_response(jsonify([r.to_dict() for r in reports]), 200)
+
+
 class ReportDonations(Resource):
     def get(self, id):
         """List all donations for a report."""
@@ -239,5 +275,6 @@ class ReportDonations(Resource):
 
 
 api.add_resource(Reports, '/reports')
+api.add_resource(UserReports, '/reports/my-reports')
 api.add_resource(ReportByID, '/reports/<int:id>')
 api.add_resource(ReportDonations, '/reports/<int:id>/donations')
