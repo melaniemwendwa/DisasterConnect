@@ -58,7 +58,7 @@ function AppContent() {
           <Route path="/report" element={<ReportForm />} />
           <Route path="/donate" element={<DonationForm />} />
           <Route path="/home" element={<Home />} />
-          <Route path="/aboutus" element={<AboutUs />} />
+          <Route path="/about" element={<AboutUs />} />
         </Routes>
       </main>
 
