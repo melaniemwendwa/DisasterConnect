@@ -11,6 +11,7 @@ import { useAuth } from "../context/UserContext.jsx";
 import EditReport from "../pages/EditReport.jsx";
 import ReportDetail from "../pages/ReportDetail.jsx"
 import EditReport from "../pages/EditReport.jsx";
+import AboutUs from "../pages/AboutUs.jsx";
 
 
 const ProtectedRoute = ({ children }) => {
@@ -79,6 +80,10 @@ const routes = [
             <EditReport/>
           </ProtectedRoute>
         )
+      },
+      {
+        path: "/aboutus",
+        element: <AboutUs />,
       }
     ]
   }

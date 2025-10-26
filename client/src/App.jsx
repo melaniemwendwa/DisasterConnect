@@ -12,12 +12,12 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import ReportDetail  from "./pages/ReportDetail";
 import EditReport from "./pages/EditReport";
-
+import AboutUs from "./pages/AboutUs";
 function AppContent() {
   const location = useLocation();
 
-  const showFooterPaths = ["/", "/report", "/home", "/donate"];
-  const showNavbarPaths = ["/report", "/home", "/donate"];
+  const showFooterPaths = ["/", "/report", "/home", "/donate", "/aboutus"];
+  const showNavbarPaths = ["/report", "/home", "/donate", "/aboutus"];
   const isDashboardPath = location.pathname === "/dashboard";
   const isReportDetailPath = location.pathname.startsWith("/reports/");
 
@@ -58,6 +58,7 @@ function AppContent() {
           <Route path="/report" element={<ReportForm />} />
           <Route path="/donate" element={<DonationForm />} />
           <Route path="/home" element={<Home />} />
+          <Route path="/aboutus" element={<AboutUs />} />
         </Routes>
       </main>
 
