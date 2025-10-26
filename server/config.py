@@ -19,6 +19,12 @@ app.config["UPLOAD_FOLDER"] = os.path.join(BASE_DIR, 'uploads')
 app.secret_key = os.environ.get('SECRET_KEY', 'dev_secret_key')
 app.config['SECRET_KEY'] = app.secret_key
 
+# Session configuration for localhost development
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SECURE'] = False
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_DOMAIN'] = None  # Allow localhost
+
 print(f"[config] SECRET_KEY set: {bool(app.secret_key)}")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -35,4 +41,8 @@ migrate = Migrate(app, db)
 api = Api(app)
 
 
-CORS(app, supports_credentials=True)
+CORS(app, 
+     supports_credentials=True,
+     origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+     allow_headers=["Content-Type", "Authorization"],
+     expose_headers=["Content-Type"])

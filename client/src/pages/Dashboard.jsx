@@ -1,15 +1,19 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Api, { BASE_URL } from "../Services/api";
+import { useAuth } from "../context/AuthContext";
 
 export default function Dashboard() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchReports();
+    // Debug: Check user object
+    console.log("Current user:", user);
   }, []);
 
   const fetchReports = async () => {
@@ -31,9 +35,25 @@ export default function Dashboard() {
         setReports(reports.filter((report) => report.id !== id));
       } catch (error) {
         console.error("Error deleting report:", error);
-        alert("Failed to delete report");
+        const errorMsg = error.response?.data?.error || "Failed to delete report";
+        alert(errorMsg);
       }
     }
+  };
+
+  // Check if current user owns the report
+  const canModifyReport = (report) => {
+    const canModify = user && report.user_id === user.id;
+    console.log("Checking ownership:", {
+      hasUser: !!user,
+      userId: user?.id,
+      userIdType: typeof user?.id,
+      reportUserId: report.user_id,
+      reportUserIdType: typeof report.user_id,
+      match: user?.id === report.user_id,
+      canModify: canModify
+    });
+    return canModify;
   };
 
   const getSeverityColor = (severity) => {
@@ -240,12 +260,15 @@ export default function Dashboard() {
                   >
                     View Details
                   </button>
-                  <button
-                    onClick={() => handleDelete(report.id)}
-                    className="px-4 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition-colors text-sm font-medium"
-                  >
-                    🗑️
-                  </button>
+                  {canModifyReport(report) && (
+                    <button
+                      onClick={() => handleDelete(report.id)}
+                      className="px-4 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition-colors text-sm font-medium"
+                      title="Delete report"
+                    >
+                      🗑️
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import logo from '../assets/logo.png';
 import background from '../assets/backround image.png';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
@@ -10,33 +11,21 @@ const LoginPage = () => {
   const [showPasswordPlaceholder, setShowPasswordPlaceholder] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     try {
-      const res = await fetch("http://127.0.0.1:5555/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          email: username,
-          password: password
-        }),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        setError(errorData.error || 'Login failed');
-        return;
+      const result = await login(username, password);
+      
+      if (result.success) {
+        console.log("Login successful!");
+        navigate('/dashboard');
+      } else {
+        setError(result.error || 'Login failed');
       }
-
-      const data = await res.json();
-      console.log("Login successful:", data);
-      navigate('/dashboard');
     } catch (err) {
       console.error("Login error:", err);
       setError('Something went wrong. Please try again.');

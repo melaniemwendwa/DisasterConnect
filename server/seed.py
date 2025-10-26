@@ -53,7 +53,7 @@ def seed_reports(users):
             "location": "Nairobi, Mathare",
             "description": "Severe flooding has hit Mathare slums following heavy rains. Over 500 families have been displaced and are in urgent need of shelter, food, and clean water. Several houses have been swept away and the situation is critical.",
             "severity": "Severe",
-            "image": "/uploads/flood_mathare.jpg",
+            "image": "https://plus.unsplash.com/premium_photo-1733342648363-81cd437f9e43?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8Zmxvb2R8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=500",
             "days_ago": 2
         },
         {
@@ -61,7 +61,7 @@ def seed_reports(users):
             "location": "Turkana County",
             "description": "A severe drought has hit Turkana, Kenya, leading to widespread crop failure, livestock deaths, and food shortages. Communities are struggling with limited access to water and essential supplies. Urgent assistance is needed to provide relief and support to affected families.",
             "severity": "Severe",
-            "image": "/uploads/drought_turkana.jpg",
+            "image": "https://images.unsplash.com/photo-1599069956279-3853995091bd?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGRyb3VnaHR8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=500",
             "days_ago": 5
         },
         {
@@ -69,7 +69,7 @@ def seed_reports(users):
             "location": "Kakamega, Market Area",
             "description": "A major fire outbreak destroyed several shops in Kakamega market. Multiple families lost their livelihoods and are in need of immediate support for rebuilding and basic necessities.",
             "severity": "Moderate",
-            "image": "/uploads/fire_kakamega.jpg",
+            "image": "https://images.unsplash.com/photo-1750364264254-d3973671d8ef?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGZpcmUlMjBvdXRicmVha3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&q=60&w=500",
             "days_ago": 1
         },
         {
@@ -77,7 +77,7 @@ def seed_reports(users):
             "location": "West Pokot",
             "description": "Heavy rains triggered a massive landslide in West Pokot, burying homes and displacing hundreds of residents. Rescue operations are ongoing and survivors need emergency shelter and medical care.",
             "severity": "Severe",
-            "image": "/uploads/landslide_pokot.jpg",
+            "image": "https://images.unsplash.com/photo-1596727872624-41303a1427df?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8bGFuZHNsaWRlfGVufDB8fDB8fHww&auto=format&fit=crop&q=60&w=500",
             "days_ago": 3
         },
         {
@@ -85,7 +85,7 @@ def seed_reports(users):
             "location": "Baringo County",
             "description": "A minor earthquake measuring 4.2 on the Richter scale struck Baringo County. While there were no casualties, several buildings sustained structural damage and residents are anxious.",
             "severity": "Minor",
-            "image": "/uploads/earthquake_baringo.jpg",
+            "image": "https://plus.unsplash.com/premium_photo-1695914233513-6f9ca230abdb?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8ZWFydGhxdWFrZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&q=60&w=500",
             "days_ago": 7
         },
         {
@@ -93,7 +93,7 @@ def seed_reports(users):
             "location": "Isiolo County",
             "description": "Locust invasion has destroyed vast farmlands in Isiolo, threatening food security for thousands of families. Farmers have lost entire crops and need urgent support for pest control and replanting.",
             "severity": "Moderate",
-            "image": "/uploads/locust_isiolo.jpg",
+            "image": "https://media.istockphoto.com/id/1009077126/photo/locusts-in-autumn-fields.webp?a=1&b=1&s=612x612&w=0&k=20&c=ADIcuv5B88W9fvBzZ7CPlVqHoPk1hW_g8-SrzQ5NVSY=",
             "days_ago": 10
         },
         {
@@ -101,7 +101,7 @@ def seed_reports(users):
             "location": "Kisumu, Nyalenda",
             "description": "Flash floods in Nyalenda area have submerged homes and contaminated water sources. Residents are at risk of waterborne diseases and require immediate medical supplies and clean water.",
             "severity": "Moderate",
-            "image": "/uploads/flood_kisumu.jpg",
+            "image": "https://images.unsplash.com/photo-1580993777851-40514758f716?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGZsb29kfGVufDB8fDB8fHww&auto=format&fit=crop&q=60&w=500",
             "days_ago": 4
         },
         {
@@ -109,7 +109,7 @@ def seed_reports(users):
             "location": "Mombasa, Likoni",
             "description": "A small fire broke out in a residential area in Likoni. The fire was contained quickly but three families lost their homes and belongings.",
             "severity": "Minor",
-            "image": "/uploads/fire_mombasa.jpg",
+            "image": "https://images.unsplash.com/photo-1626114150511-de0231caa614?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YnVpbGRpbmclMjBvbiUyMGZpcmV8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=500",
             "days_ago": 6
         },
     ]

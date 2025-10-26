@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Api, { BASE_URL } from "../Services/api";
+import { useAuth } from "../context/AuthContext";
 
 // Update these helpers to match your app's routes if different
 const EDIT_ROUTE = (id) => `/reports/${id}/edit`; // e.g., '/reports/:id/edit' => (id) => `/reports/${id}/edit`
@@ -10,6 +11,7 @@ const DONATE_ROUTE = (id) => `/donate?reportId=${id}`; // navigates to donation 
 export default function ReportDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -55,6 +57,11 @@ export default function ReportDetail() {
 
   const severity = (report?.severity || "High");
 
+  // Check if current user owns the report
+  const canEditReport = useMemo(() => {
+    return user && report && report.user_id === user.id;
+  }, [user, report]);
+
   if (loading) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-8">
@@ -93,12 +100,14 @@ export default function ReportDetail() {
           >
             Back
           </button>
-          <button
-            onClick={() => navigate(EDIT_ROUTE(id))}
-            className="inline-flex items-center rounded-md bg-[#224266] px-3 py-1.5 text-sm font-semibold text-white hover:bg-[#1d3756]"
-          >
-            Edit
-          </button>
+          {canEditReport && (
+            <button
+              onClick={() => navigate(EDIT_ROUTE(id))}
+              className="inline-flex items-center rounded-md bg-[#224266] px-3 py-1.5 text-sm font-semibold text-white hover:bg-[#1d3756]"
+            >
+              Edit
+            </button>
+          )}
         </div>
       </div>
 
@@ -112,7 +121,7 @@ export default function ReportDetail() {
               <img
                 src={imageUrl}
                 alt={title}
-                className="w-full h-[420px] object-cover"
+                className="w-full h-[620px] object-cover"
               />
             </div>
           ) : (

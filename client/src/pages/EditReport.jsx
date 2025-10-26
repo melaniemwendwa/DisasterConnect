@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Api, { BASE_URL } from "../Services/api";
+import { useAuth } from "../context/AuthContext";
 
 const validationSchema = Yup.object({
   reporter_name: Yup.string()
@@ -19,6 +20,7 @@ const validationSchema = Yup.object({
 export default function EditReport() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [initialValues, setInitialValues] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -32,6 +34,15 @@ export default function EditReport() {
       try {
         const res = await Api.get(`/reports/${id}`);
         const r = res.data;
+
+        // Authorization check: only the creator can edit
+        if (user && r.user_id !== user.id) {
+          if (mounted) {
+            setErr("You are not authorized to edit this report.");
+            setLoading(false);
+          }
+          return;
+        }
 
         // Normalize date for <input type="date">
         const dateStr = r.date ? new Date(r.date).toISOString().slice(0, 10) : "";
@@ -83,7 +94,8 @@ export default function EditReport() {
       navigate(`/reports/${id}`);
     } catch (e) {
       console.error(e);
-      alert("Failed to update report");
+      const errorMsg = e.response?.data?.error || "Failed to update report";
+      alert(errorMsg);
     } finally {
       setSubmitting(false);
     }
@@ -116,8 +128,14 @@ export default function EditReport() {
 
   if (err || !initialValues) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-red-600">{err || "Could not load report."}</div>
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
+        <div className="text-red-600 text-xl mb-4">{err || "Could not load report."}</div>
+        <button
+          onClick={() => navigate('/dashboard')}
+          className="px-4 py-2 bg-[#224266] text-white rounded-lg hover:bg-[#1d3756]"
+        >
+          Back to Dashboard
+        </button>
       </div>
     );
   }

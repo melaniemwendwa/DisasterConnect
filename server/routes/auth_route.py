@@ -41,6 +41,7 @@ class Login(Resource):
             return make_response({"error": "Invalid email or password"}, 401)
 
         session["user_id"] = user.id
+        print(f"[LOGIN] Set session user_id: {user.id}, Session: {dict(session)}")
         return make_response(user.to_dict(), 200)
 
 

@@ -19,6 +19,7 @@ function AppContent() {
   const showFooterPaths = ["/", "/report", "/home", "/donate"];
   const showNavbarPaths = ["/report", "/home", "/donate"];
   const isDashboardPath = location.pathname === "/dashboard";
+  const isReportDetailPath = location.pathname.startsWith("/reports/");
 
   const shouldShowFooter = showFooterPaths.includes(location.pathname);
   const shouldShowNavbar = showNavbarPaths.includes(location.pathname);
@@ -29,6 +30,20 @@ function AppContent() {
       <DashboardLayout>
         <Dashboard />
       </DashboardLayout>
+    );
+  }
+
+  // If it's a report detail or edit path, render without navbar/footer
+  if (isReportDetailPath) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/reports/:id" element={<ReportDetail />} />
+            <Route path="/reports/:id/edit" element={<EditReport />} />
+          </Routes>
+        </main>
+      </div>
     );
   }
 
@@ -43,8 +58,6 @@ function AppContent() {
           <Route path="/report" element={<ReportForm />} />
           <Route path="/donate" element={<DonationForm />} />
           <Route path="/home" element={<Home />} />
-          <Route path="/reports/:id" element={<ReportDetail />} />
-          <Route path="/reports/:id/edit" element={<EditReport />} />
         </Routes>
       </main>
 

@@ -25,6 +25,7 @@ class Reports(Resource):
         # 1. Check for logged-in user (OPTIONAL)
         # We check for the user ID, but don't enforce it
         user_id = session.get("user_id")
+        print(f"[POST /reports] Session user_id: {user_id}")
 
         type = request.form.get("type")
         description = request.form.get("description")
@@ -87,6 +88,16 @@ class ReportByID(Resource):
         report = Report.query.get(id)
         if not report:
             return make_response({"error": "Report not found"}, 404)
+
+        # Authorization check: only the creator can edit
+        user_id = session.get("user_id")
+        print(f"[PATCH] Session user_id: {user_id}, Report user_id: {report.user_id}")
+        
+        if not user_id:
+            return make_response({"error": "Unauthorized. Please log in."}, 401)
+        
+        if report.user_id != user_id:
+            return make_response({"error": "Forbidden. You can only edit your own reports."}, 403)
 
         # Check if request is FormData (with file) or JSON
         is_form_data = request.content_type and 'multipart/form-data' in request.content_type
@@ -172,6 +183,14 @@ class ReportByID(Resource):
         report = Report.query.get(id)
         if not report:
             return make_response({"error": "Report not found"}, 404)
+
+        # Authorization check: only the creator can delete
+        user_id = session.get("user_id")
+        if not user_id:
+            return make_response({"error": "Unauthorized. Please log in."}, 401)
+        
+        if report.user_id != user_id:
+            return make_response({"error": "Forbidden. You can only delete your own reports."}, 403)
 
         db.session.delete(report)
         db.session.commit()
