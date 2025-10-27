@@ -1,15 +1,32 @@
- import React from 'react';
+import React from 'react';
+// *** Re-confirming this path based on the standard structure ***
+import FloodImage from '../assets/flood.jpeg'; 
 
 const AboutUs = () => {
   return (
     <div className="min-h-screen flex flex-col bg-white text-gray-800 font-Jost">
       
-      <main className="flex-grow p-10 md:p-16 lg:p-20 flex justify-center items-start">
-        <div className="max-w-5xl w-full pt-10">
-          
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-8 uppercase text-black">
+      {/* --- Image and Title Section (Hero) --- */}
+      <div className="relative w-full h-[40vh] md:h-[50vh] overflow-hidden">
+        
+        {/* The Image */}
+        <img 
+          src={FloodImage} 
+          alt="Disaster relief scene, symbolizing crisis and response" 
+          className="w-full h-full object-cover object-center"
+        />
+        
+        {/* The Text Overlay */}
+        <div className="absolute inset-0 bg-opacity-50 flex items-center justify-center">
+          <h1 className="text-5xl md:text-7xl font-extrabold uppercase text-white tracking-widest p-4 text-center">
             ABOUT US
           </h1>
+        </div>
+      </div>
+      {/* -------------------------------------- */}
+      
+      <main className="flex-grow p-10 md:p-16 lg:p-20 flex justify-center items-start">
+        <div className="max-w-5xl w-full">
           
           {/* Expanded Body Text Block */}
           <div className="text-lg md:text-xl leading-relaxed space-y-6">
@@ -45,12 +62,7 @@ const AboutUs = () => {
         </div>
       </main>
       
-      {/* Footer with specified custom hex color */}
-      <footer className="bg-[#224266] text-white text-center py-4 text-sm">
-        <p className="m-0">
-          &copy;2025 DisasterConnect. All rights reserved
-        </p>
-      </footer>
+       
     </div>
   );
 };

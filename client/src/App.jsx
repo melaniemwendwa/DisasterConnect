@@ -2,6 +2,7 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import LandingPageNavbar from "./components/LandingPageNavbar";
 import DashboardLayout from "./components/DashboardLayout";
 import Home from "./pages/Home";
 import ReportForm from "./pages/ReportForm";
@@ -16,11 +17,11 @@ import AboutUs from "./pages/AboutUs";
 function AppContent() {
   const location = useLocation();
 
-  const showFooterPaths = ["/", "/report", "/home", "/donate", "/aboutus"];
-  const showNavbarPaths = ["/report", "/home", "/donate", "/aboutus"];
+  const showFooterPaths = ["/", "/report", "/home", "/donate", "/about"];
+  const showNavbarPaths = ["/report", "/home", "/donate"];
   const isDashboardPath = location.pathname === "/dashboard";
   const isReportDetailPath = location.pathname.startsWith("/reports/");
-
+  const isAboutPath = location.pathname === "/about";
   const shouldShowFooter = showFooterPaths.includes(location.pathname);
   const shouldShowNavbar = showNavbarPaths.includes(location.pathname);
 
@@ -49,6 +50,7 @@ function AppContent() {
 
   return (
     <div className="flex flex-col min-h-screen">
+      {isAboutPath && <LandingPageNavbar />}
       {shouldShowNavbar && <Navbar />}
       <main className="flex-grow">
         <Routes>
