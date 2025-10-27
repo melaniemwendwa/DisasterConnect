@@ -16,6 +16,7 @@ import EditReport from "./pages/EditReport";
 import AboutUs from "./pages/AboutUs";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminLogin from "./pages/AdminLogin";
+import ResetPassword from "./pages/ResetPassword";
 function AppContent() {
   const location = useLocation();
 
@@ -83,6 +84,7 @@ function AppContent() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/report" element={<ReportForm />} />
           <Route path="/donate" element={<DonationForm />} />
           <Route path="/home" element={<Home />} />

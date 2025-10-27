@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 // 1. **FIXED: Ensure this line is active and correct**
 import Api, { BASE_URL } from '../Services/api'; // import base URL to build image URLs
-// You may also need to get the BASE_URL if your Api file exports it
-// If Api.js exports BASE_URL, import it:
-// import Api, { BASE_URL } from '../services/Api'; 
+
 
 
 // Utility function to map backend 'severity' to frontend 'priority' and Tailwind classes

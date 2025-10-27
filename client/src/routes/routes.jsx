@@ -12,6 +12,7 @@ import EditReport from "../pages/EditReport.jsx";
 import ReportDetail from "../pages/ReportDetail.jsx"
 import EditReport from "../pages/EditReport.jsx";
 import AboutUs from "../pages/AboutUs.jsx";
+import ResetPassword from "../pages/ResetPassword.jsx";
 
 
 const ProtectedRoute = ({ children }) => {
@@ -84,6 +85,10 @@ const routes = [
       {
         path: "/aboutus",
         element: <AboutUs />,
+      },
+      {
+        path: "/reset-password",
+        element: <ResetPassword />,
       }
     ]
   }
