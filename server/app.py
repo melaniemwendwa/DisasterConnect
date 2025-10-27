@@ -9,7 +9,7 @@ from flask_restful import Resource
 # Local imports
 from config import app, db, api
 # Add your model imports
-from routes import auth_route, report_route
+from routes import auth_route, report_route, admin_route, admin_auth_route
 
 
 # Serve uploaded files

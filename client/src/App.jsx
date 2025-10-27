@@ -14,16 +14,42 @@ import Dashboard from "./pages/Dashboard";
 import ReportDetail  from "./pages/ReportDetail";
 import EditReport from "./pages/EditReport";
 import AboutUs from "./pages/AboutUs";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminLogin from "./pages/AdminLogin";
 function AppContent() {
   const location = useLocation();
 
   const showFooterPaths = ["/", "/report", "/home", "/donate", "/about"];
   const showNavbarPaths = ["/report", "/home", "/donate"];
   const isDashboardPath = location.pathname === "/dashboard";
+  const isAdminDashboardPath = location.pathname === "/admin/dashboard";
+  const isAdminLoginPath = location.pathname === "/admin/login";
   const isReportDetailPath = location.pathname.startsWith("/reports/");
   const isAboutPath = location.pathname === "/about";
   const shouldShowFooter = showFooterPaths.includes(location.pathname);
   const shouldShowNavbar = showNavbarPaths.includes(location.pathname);
+
+  // If it's the admin login path, render without layout
+  if (isAdminLoginPath) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <main className="flex-grow">
+          <AdminLogin />
+        </main>
+      </div>
+    );
+  }
+
+  // If it's the admin dashboard path, render without layout
+  if (isAdminDashboardPath) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <main className="flex-grow">
+          <AdminDashboard />
+        </main>
+      </div>
+    );
+  }
 
   // If it's the dashboard path, use DashboardLayout
   if (isDashboardPath) {
