@@ -26,6 +26,7 @@ class Signup(Resource):
         db.session.commit()
 
         session["user_id"] = new_user.id
+        session.modified = True  # Force session to be saved
         return make_response(new_user.to_dict(), 201)
 
 
@@ -41,6 +42,7 @@ class Login(Resource):
             return make_response({"error": "Invalid email or password"}, 401)
 
         session["user_id"] = user.id
+        session.modified = True  # Force session to be saved
         print(f"[LOGIN] Set session user_id: {user.id}, Session: {dict(session)}")
         return make_response(user.to_dict(), 200)
 

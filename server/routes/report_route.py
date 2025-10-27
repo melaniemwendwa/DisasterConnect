@@ -200,6 +200,8 @@ class UserReports(Resource):
     def get(self):
         """Get reports created by the user OR reports they donated to."""
         user_id = session.get("user_id")
+        print(f"[UserReports GET] Session data: {dict(session)}")
+        print(f"[UserReports GET] user_id from session: {user_id}")
         if not user_id:
             return make_response({"error": "Unauthorized. Please log in."}, 401)
         

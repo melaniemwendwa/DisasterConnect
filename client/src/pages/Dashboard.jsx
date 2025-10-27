@@ -90,10 +90,15 @@ export default function Dashboard() {
     if (!image) return null;
     if (image.startsWith('http') || image.startsWith('//')) {
       return image;
+    }
+    // Images are served from Flask at /uploads/<filename>
+    // With Vite proxy, we need to use /api/uploads/<filename>
+    if (image.startsWith('/uploads/')) {
+      return `/api${image}`;
     } else if (image.startsWith('/')) {
-      return `${BASE_URL}${image}`;
+      return `/api${image}`;
     } else {
-      return `${BASE_URL}/${image}`;
+      return `/api/${image}`;
     }
   };
 

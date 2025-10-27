@@ -15,7 +15,7 @@ class User(db.Model, SerializerMixin):
     _password_hash = db.Column(String, nullable=False)
 
     reports = db.relationship('Report', back_populates='user', cascade="all, delete-orphan")
-    serialize_rules = ("-reports.user",)
+    serialize_rules = ("-reports.user", "-_password_hash")
 
     @property
     def password_hash(self):

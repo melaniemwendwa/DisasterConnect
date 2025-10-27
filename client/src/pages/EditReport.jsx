@@ -63,6 +63,7 @@ export default function EditReport() {
       }
     })();
     return () => { mounted = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const handleSubmit = async (values, { setSubmitting }) => {
@@ -140,11 +141,11 @@ export default function EditReport() {
     );
   }
 
-  const previewSrc =
+  const existingImageUrl =
     typeof initialValues.image === "string" && initialValues.image
       ? (initialValues.image.startsWith("http")
           ? initialValues.image
-          : `${BASE_URL}${initialValues.image}`)
+          : `/api${initialValues.image}`)
       : null;
 
   return (
@@ -253,10 +254,10 @@ export default function EditReport() {
                     </button>
                     <p className="text-sm text-green-600 mt-2">✓ New image selected</p>
                   </div>
-                ) : previewSrc ? (
+                ) : existingImageUrl ? (
                   <div>
                     <img
-                      src={previewSrc}
+                      src={existingImageUrl}
                       alt="Current"
                       className="w-full h-64 object-cover rounded-xl border mb-3"
                       onError={(e) => {

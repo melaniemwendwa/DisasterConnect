@@ -44,8 +44,9 @@ export default function ReportDetail() {
     const src = report?.image || report?.image_url || "";
     if (!src) return "";
     if (src.startsWith("http") || src.startsWith("//")) return src;
-    if (src.startsWith("/")) return `${BASE_URL}${src}`;
-    return `${BASE_URL}/${src}`;
+    // With Vite proxy, use /api prefix for images served by Flask
+    if (src.startsWith("/")) return `/api${src}`;
+    return `/api/${src}`;
   }, [report]);
 
   const title = useMemo(() => {

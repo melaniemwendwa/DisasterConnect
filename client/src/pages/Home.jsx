@@ -31,15 +31,15 @@ const ReportCard = ({ report }) => {
   const { priority, priorityClass, borderClass } = getPriorityClasses(report.severity);
   
   // Build a usable image URL. The backend stores images as "/uploads/<filename>".
-  // When report.image is a relative path (starts with '/'), prefix the backend BASE_URL
+  // With Vite proxy, we need to use /api prefix for images served by Flask
   let imageUrl = null;
   if (report.image) {
     if (report.image.startsWith('http') || report.image.startsWith('//')) {
       imageUrl = report.image;
     } else if (report.image.startsWith('/')) {
-      imageUrl = `${BASE_URL}${report.image}`;
+      imageUrl = `/api${report.image}`;
     } else {
-      imageUrl = `${BASE_URL}/${report.image}`;
+      imageUrl = `/api/${report.image}`;
     }
   }
 
