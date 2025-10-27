@@ -92,7 +92,7 @@ export default function EditReport() {
         await Api.patch(`/reports/${id}`, payload);
       }
 
-      navigate(`/reports/${id}`);
+      navigate(`/reports/${id}`, { replace: true });
     } catch (e) {
       console.error(e);
       const errorMsg = e.response?.data?.error || "Failed to update report";
@@ -243,7 +243,7 @@ export default function EditReport() {
                     <img
                       src={imagePreview}
                       alt="New preview"
-                      className="w-full h-64 object-cover rounded-xl border"
+                      className="w-full h-500 object-cover rounded-xl border"
                     />
                     <button
                       type="button"
