@@ -36,38 +36,36 @@ raw_uri = os.getenv("DATABASE_URL")
 
 if raw_uri:
     # Production: Use PostgreSQL from Render
-    print("⚙️ Raw DATABASE_URL from environment:", raw_uri)
+    print(f"⚙️ Raw DATABASE_URL from environment: {raw_uri[:20]}...{raw_uri[-20:]}")
+    print(f"🔍 URL starts with: '{raw_uri[:15]}'")
     
     # Normalize it for SQLAlchemy 2.x (requires driver specification)
     # Using psycopg (v3) which has better Python 3.11+ support
-    if raw_uri.startswith("postgres://"):
+    # Force replacement - handle both postgres:// and postgresql://
+    if "postgres://" in raw_uri and "postgresql+psycopg://" not in raw_uri:
+        # Replace any variant of postgres:// with postgresql+psycopg://
         db_url = raw_uri.replace("postgres://", "postgresql+psycopg://", 1)
-        print("🔄 Replaced 'postgres://' with 'postgresql+psycopg://'")
-    elif raw_uri.startswith("postgresql://"):
-        db_url = raw_uri.replace("postgresql://", "postgresql+psycopg://", 1)
-        print("🔄 Replaced 'postgresql://' with 'postgresql+psycopg://'")
+        db_url = db_url.replace("postgresql://", "postgresql+psycopg://", 1)
+        print(f"🔄 Forced replacement to postgresql+psycopg://")
     else:
         db_url = raw_uri
-        print("⚠️  No replacement needed, using URL as-is")
+        print("⚠️  No replacement needed")
     
-    # Show the converted URL (mask password)
+    # Verify protocol is correct
+    protocol = db_url.split('://')[0] + '://'
+    print(f"✅ Final protocol: {protocol}")
+    
+    # Show connection info (mask password)
     if '@' in db_url:
-        parts = db_url.split('@')
-        protocol_and_creds = parts[0]
-        host_and_db = parts[1]
-        # Show protocol clearly
-        protocol = db_url.split('://')[0] + '://'
-        print(f"✅ Using protocol: {protocol}")
+        host_and_db = db_url.split('@')[1]
         print(f"✅ Connected to: {host_and_db}")
-    else:
-        print(f"✅ Converted DATABASE_URL: {db_url}")
 else:
     # Local development: Use SQLite
     db_url = 'sqlite:///app.db'
     print("💻 Using local SQLite database for development")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = db_url
-print(f"🔧 Final SQLALCHEMY_DATABASE_URI starts with: {app.config['SQLALCHEMY_DATABASE_URI'][:40]}...")
+print(f"🔧 SQLALCHEMY_DATABASE_URI set: {db_url[:40]}...")
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
