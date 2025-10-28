@@ -55,3 +55,43 @@ class AdminCheckSession(Resource):
 api.add_resource(AdminLogin, '/admin/login')
 api.add_resource(AdminLogout, '/admin/logout')
 api.add_resource(AdminCheckSession, '/admin/check-session')
+# --- TEMPORARY ADMIN SETUP ROUTE ---
+from flask import request, jsonify
+from config import app, db
+from models import Admin
+
+@app.route("/setup-admin", methods=["POST"])
+def setup_admin():
+    """
+    This route is used to create the first admin after deployment.
+    It will automatically disable itself once at least one admin exists.
+    """
+    data = request.get_json()
+    username = data.get("username")
+    email = data.get("email")
+    password = data.get("password")
+
+    # Check if an admin already exists
+    if Admin.query.first():
+        return jsonify({
+            "error": "An admin already exists. Setup route disabled."
+        }), 403
+
+    # Validate inputs
+    if not username or not email or not password:
+        return jsonify({"error": "All fields (username, email, password) are required"}), 400
+
+    # Create the admin
+    new_admin = Admin(username=username, email=email)
+    new_admin.password_hash = password  # uses the setter property in your model
+    db.session.add(new_admin)
+    db.session.commit()
+
+    return jsonify({
+        "message": "✅ Admin account created successfully!",
+        "admin": {
+            "username": username,
+            "email": email
+        }
+    }), 201
+

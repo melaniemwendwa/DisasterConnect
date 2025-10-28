@@ -1,19 +1,11 @@
 from flask_restful import Resource
 from flask import request, jsonify, make_response, current_app, session
 from werkzeug.utils import secure_filename
-from models import  Report, User, Donation
+from models import Report, User, Donation
 import os
 from config import api, db
 from datetime import datetime, date, timezone
-
-def classify_severity(description):
-    description = description.lower()
-    if any(word in description for word in ["destroyed", "severe", "catastrophic"]):
-        return "Severe"
-    elif any(word in description for word in ["minor", "small", "contained"]):
-        return "Minor"
-    else:
-        return "Moderate"
+from ai_utils import classify_disaster_type, classify_severity
 
 
 class Reports(Resource):
@@ -27,13 +19,17 @@ class Reports(Resource):
         user_id = session.get("user_id")
         print(f"[POST /reports] Session user_id: {user_id}")
 
-        type = request.form.get("type")
         description = request.form.get("description")
         location = request.form.get("location")
         image = request.files.get("image")
 
-        if not type or not description or not location:
+        if not description or not location:
             return make_response({"error": "Missing required fields"}, 400)
+            
+        # Use AI to classify the disaster type based on description
+        type_result = classify_disaster_type(description)
+        print(f"[AI Classification] Disaster type: {type_result['type']} "
+              f"(confidence: {type_result['confidence']}, reason: {type_result['explanation']})")
 
         image_url = None
         if image:
@@ -49,7 +45,9 @@ class Reports(Resource):
             # Expose a web-accessible path (served from /uploads/<filename>)
             image_url = f"/uploads/{filename}"
 
-        severity = classify_severity(description)
+        severity_result = classify_severity(description)
+        print(f"[AI Classification] Severity: {severity_result['severity']} "
+              f"(confidence: {severity_result['confidence']}, reason: {severity_result['explanation']})")
         
         # 2. Handle Anonymous/Logged-in Reporter Data
         reporter_name = "Anonymous"
@@ -63,11 +61,15 @@ class Reports(Resource):
         # which correctly indicates an anonymous submission.
 
         new_report = Report(
-            type=type,
+            type=type_result['type'],
+            type_confidence=type_result['confidence'],
+            type_explanation=type_result['explanation'],
             description=description,
             location=location,
             image=image_url,
-            severity=severity,
+            severity=severity_result['severity'],
+            severity_confidence=severity_result['confidence'],
+            severity_explanation=severity_result['explanation'],
             reporter_name=reporter_name,  # Set name to username or "Anonymous"
             user_id=user_id               # Set user_id to actual ID or None (NULL in DB)
         )
@@ -170,7 +172,10 @@ class ReportByID(Resource):
 
         # Optional: keep severity consistent with POST when description changes
         if "description" in data and isinstance(data["description"], str):
-            report.severity = classify_severity(data["description"])
+            severity_result = classify_severity(data["description"])
+            report.severity = severity_result['severity']
+            report.severity_confidence = severity_result['confidence']
+            report.severity_explanation = severity_result['explanation']
 
         # Apply other fields (includes reporter_name, type, location, etc.)
         for key, value in data.items():

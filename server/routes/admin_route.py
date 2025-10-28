@@ -84,12 +84,12 @@ class AdminDonations(Resource):
                 donation_dict['report_type'] = d.report.type
                 donation_dict['report_location'] = d.report.location
                 donation_dict['report_description'] = d.report.description
-                print(f"✅ Donation {d.id}: {d.report.type} at {d.report.location}")  # Debug
+                print(f" Donation {d.id}: {d.report.type} at {d.report.location}")  # Debug
             else:
                 donation_dict['report_type'] = None
                 donation_dict['report_location'] = None
                 donation_dict['report_description'] = None
-                print(f"❌ Donation {d.id}: No report found")  # Debug
+                print(f" Donation {d.id}: No report found")  # Debug
             donations_data.append(donation_dict)
         
         return make_response(jsonify(donations_data), 200)

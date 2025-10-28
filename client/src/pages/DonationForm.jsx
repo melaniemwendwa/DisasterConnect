@@ -54,9 +54,12 @@ export default function DonationForm() {
 			if (res.status === 201 || res.status === 200) {
 				setMessage("Donation submitted successfully!");
 				resetForm();
-				// Navigate back to report detail if reportId exists
+				// Navigate to report detail page, replacing donation page in history
+				// This ensures clicking back from details goes to home/dashboard, not donation page
 				if (reportId) {
-					setTimeout(() => navigate(`/reports/${reportId}`), 1500);
+					setTimeout(() => {
+						navigate(`/reports/${reportId}`, { replace: true });
+					}, 1500);
 				}
 			} else {
 				setMessage("Failed to submit donation. Try again.");

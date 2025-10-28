@@ -69,6 +69,12 @@ class Report(db.Model, SerializerMixin):
     image = db.Column(String, nullable=True)
     severity = db.Column(String, nullable=True)
     reporter_name = db.Column(String, nullable=False, default="Unknown Reporter")
+    
+    # AI Classification metadata
+    type_confidence = db.Column(Float, nullable=True)  
+    type_explanation = db.Column(String, nullable=True)  
+    severity_confidence = db.Column(Float, nullable=True)  
+    severity_explanation = db.Column(String, nullable=True)  
 
     user_id = db.Column(Integer, ForeignKey('users.id'))
     user = relationship('User', back_populates='reports')
