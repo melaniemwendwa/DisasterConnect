@@ -36,20 +36,23 @@ raw_uri = os.getenv("DATABASE_URL")
 
 if raw_uri:
     # Production: Use PostgreSQL from Render
-    print(f"⚙️ Raw DATABASE_URL from environment: {raw_uri[:20]}...{raw_uri[-20:]}")
-    print(f"🔍 URL starts with: '{raw_uri[:15]}'")
+    # Clean up whitespace/newlines that might be in the environment variable
+    raw_uri = raw_uri.strip()
+    
+    print(f"⚙️ Raw DATABASE_URL: {raw_uri[:25]}...{raw_uri[-25:]}")
     
     # Normalize it for SQLAlchemy 2.x (requires driver specification)
     # Using psycopg (v3) which has better Python 3.11+ support
     # Force replacement - handle both postgres:// and postgresql://
-    if "postgres://" in raw_uri and "postgresql+psycopg://" not in raw_uri:
-        # Replace any variant of postgres:// with postgresql+psycopg://
+    if raw_uri.startswith("postgres://") and not raw_uri.startswith("postgresql+psycopg://"):
         db_url = raw_uri.replace("postgres://", "postgresql+psycopg://", 1)
-        db_url = db_url.replace("postgresql://", "postgresql+psycopg://", 1)
-        print(f"🔄 Forced replacement to postgresql+psycopg://")
+        print(f"🔄 Replaced postgres:// → postgresql+psycopg://")
+    elif raw_uri.startswith("postgresql://") and not raw_uri.startswith("postgresql+psycopg://"):
+        db_url = raw_uri.replace("postgresql://", "postgresql+psycopg://", 1)
+        print(f"🔄 Replaced postgresql:// → postgresql+psycopg://")
     else:
         db_url = raw_uri
-        print("⚠️  No replacement needed")
+        print("✅ URL already has correct driver format")
     
     # Verify protocol is correct
     protocol = db_url.split('://')[0] + '://'
@@ -58,7 +61,7 @@ if raw_uri:
     # Show connection info (mask password)
     if '@' in db_url:
         host_and_db = db_url.split('@')[1]
-        print(f"✅ Connected to: {host_and_db}")
+        print(f"✅ Connecting to: {host_and_db}")
 else:
     # Local development: Use SQLite
     db_url = 'sqlite:///app.db'
