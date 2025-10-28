@@ -12,7 +12,7 @@ flask-cors = "*"
 gunicorn = "*"
 werkzeug = "*"
 sqlalchemy-serializer = "*"
-psycopg2-binary = "*"
+psycopg = {extras = ["binary"], version = "*"}
 openai = "*"
 python-dotenv = "*"
 annotated-types = "*"

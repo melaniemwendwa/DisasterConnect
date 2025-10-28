@@ -39,20 +39,22 @@ if raw_uri:
     print("⚙️ Raw DATABASE_URL from environment:", raw_uri)
     
     # Normalize it for SQLAlchemy 2.x (requires driver specification)
+    # Using psycopg (v3) which has better Python 3.13 support
     if raw_uri.startswith("postgres://"):
-        db_url = raw_uri.replace("postgres://", "postgresql+psycopg2://", 1)
+        db_url = raw_uri.replace("postgres://", "postgresql+psycopg://", 1)
     elif raw_uri.startswith("postgresql://"):
-        db_url = raw_uri.replace("postgresql://", "postgresql+psycopg2://", 1)
+        db_url = raw_uri.replace("postgresql://", "postgresql+psycopg://", 1)
     else:
         db_url = raw_uri
     
-    print(f"✅ Using PostgreSQL database: {db_url.split('@')[1] if '@' in db_url else 'configured'}")
+    print(f"✅ Converted DATABASE_URL to: {db_url[:30]}...{db_url[-30:]}")
 else:
     # Local development: Use SQLite
     db_url = 'sqlite:///app.db'
     print("💻 Using local SQLite database for development")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = db_url
+print(f"🔧 Config SQLALCHEMY_DATABASE_URI set to: {app.config['SQLALCHEMY_DATABASE_URI'][:30] if app.config['SQLALCHEMY_DATABASE_URI'] else 'None'}...")
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
