@@ -30,19 +30,22 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_DOMAIN'] = None  # Allow localhost
 
 print(f"[config] SECRET_KEY set: {bool(app.secret_key)}")
-uri = os.getenv("DATABASE_URL")
 
-# 🔍 Debug and normalize URI
-print("⚙️ Raw DATABASE_URL from environment:", uri)
-db_url = os.getenv("DATABASE_URL")
+raw_uri = os.getenv("DATABASE_URL")
+print("⚙️ Raw DATABASE_URL from environment:", raw_uri)
 
-# Fix prefix if needed for SQLAlchemy
-if db_url and db_url.startswith("postgres://"):
-    db_url = db_url.replace("postgres://", "postgresql+psycopg2://", 1)
-elif db_url and db_url.startswith("postgresql://"):
-    db_url = db_url.replace("postgresql://", "postgresql+psycopg2://", 1)
+if not raw_uri:
+    raise RuntimeError("❌ DATABASE_URL not set in environment!")
 
-app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+# Normalize it for SQLAlchemy
+if raw_uri.startswith("postgres://"):
+    db_url = raw_uri.replace("postgres://", "postgresql+psycopg2://", 1)
+elif raw_uri.startswith("postgresql://"):
+    db_url = raw_uri.replace("postgresql://", "postgresql+psycopg2://", 1)
+else:
+    db_url = raw_uri  # fallback just in case
+
+app.config["SQLALCHEMY_DATABASE_URI"] = db_url
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
