@@ -1,6 +1,6 @@
 import React from 'react';
 // *** Re-confirming this path based on the standard structure ***
-import FloodImage from '../assets/flood.jpeg'; 
+import ReliefImage from '../assets/relief.png';
 
 const AboutUs = () => {
   return (
@@ -11,7 +11,7 @@ const AboutUs = () => {
         
         {/* The Image */}
         <img 
-          src={FloodImage} 
+          src={ReliefImage} 
           alt="Disaster relief scene, symbolizing crisis and response" 
           className="w-full h-full object-cover object-center"
         />
