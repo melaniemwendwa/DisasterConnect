@@ -34,16 +34,15 @@ uri = os.getenv("DATABASE_URL")
 
 # 🔍 Debug and normalize URI
 print("⚙️ Raw DATABASE_URL from environment:", uri)
+db_url = os.getenv("DATABASE_URL")
 
-if uri and uri.startswith("postgres://"):
-    uri = uri.replace("postgres://", "postgresql://", 1)
+# Fix prefix if needed for SQLAlchemy
+if db_url and db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql+psycopg2://", 1)
+elif db_url and db_url.startswith("postgresql://"):
+    db_url = db_url.replace("postgresql://", "postgresql+psycopg2://", 1)
 
-if not uri:
-    raise ValueError(" DATABASE_URL environment variable not set!")
-
-print("✅Final SQLALCHEMY_DATABASE_URI being used:", uri)
-
-app.config["SQLALCHEMY_DATABASE_URI"] = uri
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
