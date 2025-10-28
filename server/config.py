@@ -31,19 +31,26 @@ app.config['SESSION_COOKIE_DOMAIN'] = None  # Allow localhost
 
 print(f"[config] SECRET_KEY set: {bool(app.secret_key)}")
 
+# Database configuration
 raw_uri = os.getenv("DATABASE_URL")
-print("⚙️ Raw DATABASE_URL from environment:", raw_uri)
 
-if not raw_uri:
-    raise RuntimeError("❌ DATABASE_URL not set in environment!")
-
-# Normalize it for SQLAlchemy
-if raw_uri.startswith("postgres://"):
-    db_url = raw_uri.replace("postgres://", "postgresql+psycopg2://", 1)
-elif raw_uri.startswith("postgresql://"):
-    db_url = raw_uri.replace("postgresql://", "postgresql+psycopg2://", 1)
+if raw_uri:
+    # Production: Use PostgreSQL from Render
+    print("⚙️ Raw DATABASE_URL from environment:", raw_uri)
+    
+    # Normalize it for SQLAlchemy 2.x (requires driver specification)
+    if raw_uri.startswith("postgres://"):
+        db_url = raw_uri.replace("postgres://", "postgresql+psycopg2://", 1)
+    elif raw_uri.startswith("postgresql://"):
+        db_url = raw_uri.replace("postgresql://", "postgresql+psycopg2://", 1)
+    else:
+        db_url = raw_uri
+    
+    print(f"✅ Using PostgreSQL database: {db_url.split('@')[1] if '@' in db_url else 'configured'}")
 else:
-    db_url = raw_uri  # fallback just in case
+    # Local development: Use SQLite
+    db_url = 'sqlite:///app.db'
+    print("💻 Using local SQLite database for development")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = db_url
 
@@ -61,8 +68,20 @@ migrate = Migrate(app, db)
 api = Api(app)
 
 
+# CORS configuration for development and production
+allowed_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+# Add production frontend URL if available
+frontend_url = os.getenv("FRONTEND_URL")
+if frontend_url:
+    allowed_origins.append(frontend_url)
+    print(f"🌐 Added production frontend to CORS: {frontend_url}")
+
 CORS(app, 
      supports_credentials=True,
-     origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+     origins=allowed_origins,
      allow_headers=["Content-Type", "Authorization"],
      expose_headers=["Content-Type"])
