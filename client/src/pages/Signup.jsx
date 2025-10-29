@@ -3,6 +3,7 @@ import logo from '../assets/logo.png';
 import background from '../assets/backround image.png';
 import { FaEnvelope } from "react-icons/fa";
 import { IoMdLock } from "react-icons/io";
+import Api from '../Services/api';
 
 const SignupPage = () => {
   const [email, setEmail] = useState('');
@@ -21,30 +22,19 @@ const SignupPage = () => {
     }
 
     try {
-      const res = await fetch("http://127.0.0.1:5555/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include", // ✅ important for session cookies
-        body: JSON.stringify({
-          email,
-          password,
-          username: email.split("@")[0], // use part of email as username
-        }),
+      const res = await Api.post("/signup", {
+        email,
+        password,
+        username: email.split("@")[0], // use part of email as username
       });
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        alert(errorData.error || "Signup failed");
-        return;
-      }
-
-      const data = await res.json();
-      console.log("Signup success:", data);
+      console.log("Signup success:", res.data);
       alert("Signup successful!");
       window.location.href = "/login"; // redirect to login
     } catch (err) {
       console.error("Signup error:", err);
-      alert("Something went wrong. Please try again.");
+      const errorMessage = err.response?.data?.error || "Something went wrong. Please try again.";
+      alert(errorMessage);
     }
   };
 

@@ -2,7 +2,8 @@ import axios from "axios";
 
 // Use /api prefix which will be proxied to localhost:5555 by Vite
 // This eliminates cross-origin issues with session cookies
-const BASE_URL = "/api";
+const DEFAULT_BASE = "/api";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || DEFAULT_BASE;
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,

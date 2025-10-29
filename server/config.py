@@ -31,39 +31,33 @@ app.config['SESSION_COOKIE_DOMAIN'] = None  # Allow localhost
 
 print(f"[config] SECRET_KEY set: {bool(app.secret_key)}")
 
-# Database configuration
+
 raw_uri = os.getenv("DATABASE_URL")
 
 if raw_uri:
-    # Production: Use PostgreSQL from Render
-    # Clean up whitespace/newlines that might be in the environment variable
     raw_uri = raw_uri.strip()
     
-    print(f"⚙️ Raw DATABASE_URL: {raw_uri[:25]}...{raw_uri[-25:]}")
+    print(f" Raw DATABASE_URL: {raw_uri[:25]}...{raw_uri[-25:]}")
     
-    # Normalize it for SQLAlchemy 2.x (requires driver specification)
-    # Using psycopg (v3) which has better Python 3.11+ support
-    # Force replacement - handle both postgres:// and postgresql://
     if raw_uri.startswith("postgres://") and not raw_uri.startswith("postgresql+psycopg://"):
         db_url = raw_uri.replace("postgres://", "postgresql+psycopg://", 1)
-        print(f"🔄 Replaced postgres:// → postgresql+psycopg://")
+        print(f" Replaced postgres:// → postgresql+psycopg://")
     elif raw_uri.startswith("postgresql://") and not raw_uri.startswith("postgresql+psycopg://"):
         db_url = raw_uri.replace("postgresql://", "postgresql+psycopg://", 1)
-        print(f"🔄 Replaced postgresql:// → postgresql+psycopg://")
+        print(f" Replaced postgresql:// → postgresql+psycopg://")
     else:
         db_url = raw_uri
         print("✅ URL already has correct driver format")
     
-    # Verify protocol is correct
+    
     protocol = db_url.split('://')[0] + '://'
     print(f"✅ Final protocol: {protocol}")
     
-    # Show connection info (mask password)
     if '@' in db_url:
         host_and_db = db_url.split('@')[1]
-        print(f"✅ Connecting to: {host_and_db}")
+        print(f"Connecting to: {host_and_db}")
 else:
-    # Local development: Use SQLite
+
     db_url = 'sqlite:///app.db'
     print("💻 Using local SQLite database for development")
 
@@ -84,17 +78,10 @@ migrate = Migrate(app, db)
 api = Api(app)
 
 
-# CORS configuration for development and production
-allowed_origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
+allowed_origins = "*"
 
-# Add production frontend URL if available
-frontend_url = os.getenv("FRONTEND_URL")
-if frontend_url:
-    allowed_origins.append(frontend_url)
-    print(f"🌐 Added production frontend to CORS: {frontend_url}")
+
+print(f"⚠️  CORS set to: {allowed_origins}")
 
 CORS(app, 
      supports_credentials=True,
