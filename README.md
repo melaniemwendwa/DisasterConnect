@@ -1,4 +1,4 @@
-# Disaster Response System
+# Disaster Connect
 
 A full-stack web application for reporting and managing disaster incidents. Users can create reports, view reports, and manage them. The project includes a React + Vite frontend and a Python backend (Flask-style assumed) with a relational database.
 
@@ -213,7 +213,7 @@ Add a `tests/` directory under `server/` with test fixtures that use a temporary
 
 ## License
 
-This project is under no license.
+MIT
 
 ---
 
