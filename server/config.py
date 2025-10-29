@@ -23,13 +23,17 @@ app.config["UPLOAD_FOLDER"] = os.path.join(BASE_DIR, 'uploads')
 app.secret_key = os.environ.get('SECRET_KEY', 'dev_secret_key')
 app.config['SECRET_KEY'] = app.secret_key
 
-# Session configuration for localhost development
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-app.config['SESSION_COOKIE_SECURE'] = False
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_DOMAIN'] = None  # Allow localhost
+# Session configuration - works for both local and production
+# For cross-domain cookies (deployed frontend → deployed backend), we need:
+# - SameSite=None (allows cross-domain)
+# - Secure=True (required when SameSite=None, works with HTTPS)
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+app.config['SESSION_COOKIE_SECURE'] = True  # Required for SameSite=None
+app.config['SESSION_COOKIE_HTTPONLY'] = True  # Security: prevent JS access
+app.config['SESSION_COOKIE_DOMAIN'] = None  # Auto-detect domain
 
 print(f"[config] SECRET_KEY set: {bool(app.secret_key)}")
+print(f"[config] Session cookie: SameSite=None, Secure=True (cross-domain enabled)")
 
 
 raw_uri = os.getenv("DATABASE_URL")
@@ -77,11 +81,21 @@ migrate = Migrate(app, db)
 
 api = Api(app)
 
+# CORS configuration for cross-domain authentication
+# When using credentials, we MUST specify exact origins (can't use "*")
+allowed_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
 
-allowed_origins = "*"
+# Add production frontend URL from environment variable
+frontend_url = os.getenv("FRONTEND_URL")
+if frontend_url:
+    allowed_origins.append(frontend_url)
+    print(f"✅ Added production frontend to CORS: {frontend_url}")
 
-
-print(f"⚠️  CORS set to: {allowed_origins}")
+print(f"🔐 CORS origins: {allowed_origins}")
+print(f"🔐 CORS credentials: enabled")
 
 CORS(app, 
      supports_credentials=True,
