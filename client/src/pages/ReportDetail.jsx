@@ -43,10 +43,11 @@ export default function ReportDetail() {
   const imageUrl = useMemo(() => {
     const src = report?.image || report?.image_url || "";
     if (!src) return "";
+    // If it's already a full URL (Cloudinary or full backend URL), use as-is
     if (src.startsWith("http") || src.startsWith("//")) return src;
-    // With Vite proxy, use /api prefix for images served by Flask
-    if (src.startsWith("/")) return `/api${src}`;
-    return `/api/${src}`;
+    // For relative paths, prepend the backend URL
+    if (src.startsWith("/")) return `${BASE_URL}${src}`;
+    return `${BASE_URL}/${src}`;
   }, [report]);
 
   const title = useMemo(() => {

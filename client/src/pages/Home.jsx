@@ -28,16 +28,17 @@ const ReportCard = ({ report }) => {
   const navigate = useNavigate();
   const { priority, priorityClass, borderClass } = getPriorityClasses(report.severity);
   
-  // Build a usable image URL. The backend stores images as "/uploads/<filename>".
-  // With Vite proxy, we need to use /api prefix for images served by Flask
+  // Build proper image URL
   let imageUrl = null;
   if (report.image) {
+    // If it's already a full URL (Cloudinary or full backend URL), use as-is
     if (report.image.startsWith('http') || report.image.startsWith('//')) {
       imageUrl = report.image;
     } else if (report.image.startsWith('/')) {
-      imageUrl = `/api${report.image}`;
+      // For relative paths, prepend the backend URL
+      imageUrl = `${BASE_URL}${report.image}`;
     } else {
-      imageUrl = `/api/${report.image}`;
+      imageUrl = `${BASE_URL}/${report.image}`;
     }
   }
 

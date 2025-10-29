@@ -143,9 +143,9 @@ export default function EditReport() {
 
   const existingImageUrl =
     typeof initialValues.image === "string" && initialValues.image
-      ? (initialValues.image.startsWith("http")
+      ? (initialValues.image.startsWith("http") || initialValues.image.startsWith("//")
           ? initialValues.image
-          : `/api${initialValues.image}`)
+          : `${BASE_URL}${initialValues.image}`)
       : null;
 
   return (

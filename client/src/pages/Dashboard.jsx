@@ -88,17 +88,18 @@ export default function Dashboard() {
   // Build proper image URL
   const getImageUrl = (image) => {
     if (!image) return null;
+    
+    // If it's already a full URL (Cloudinary or full backend URL), use as-is
     if (image.startsWith('http') || image.startsWith('//')) {
       return image;
     }
-    // Images are served from Flask at /uploads/<filename>
-    // With Vite proxy, we need to use /api/uploads/<filename>
-    if (image.startsWith('/uploads/')) {
-      return `/api${image}`;
-    } else if (image.startsWith('/')) {
-      return `/api${image}`;
+    
+    // For relative paths, prepend the backend URL
+    // BASE_URL is either the deployed backend or /api (for local dev proxy)
+    if (image.startsWith('/')) {
+      return `${BASE_URL}${image}`;
     } else {
-      return `/api/${image}`;
+      return `${BASE_URL}/${image}`;
     }
   };
 
