@@ -36,7 +36,7 @@ class Reports(Resource):
         if image:
             # Try Cloudinary first (if configured), otherwise fall back to local storage
             if is_cloudinary_configured():
-                # Upload to Cloudinary (permanent storage)
+                # Upload to Cloudinary (permanent cloud storage)
                 result = upload_image_to_cloudinary(image, folder="disaster_reports")
                 if result:
                     image_url = result['url']
@@ -137,7 +137,7 @@ class ReportByID(Resource):
                         data['image'] = result['url']
                         print(f"☁️ Image updated (Cloudinary): {data['image']}")
                 
-                # Fallback to local storage
+                # Fallback to local storage if Cloudinary not configured or failed
                 if 'image' not in data or not data['image']:
                     upload_folder = current_app.config["UPLOAD_FOLDER"]
                     os.makedirs(upload_folder, exist_ok=True)

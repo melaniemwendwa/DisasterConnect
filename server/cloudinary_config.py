@@ -38,7 +38,7 @@ def upload_image_to_cloudinary(image_file, folder="disaster_reports"):
             ]
         )
         
-        print(f"✅ Cloudinary upload success: {result['secure_url']}")
+        print(f"☁️ Cloudinary upload success: {result['secure_url']}")
         
         return {
             'url': result['secure_url'],
