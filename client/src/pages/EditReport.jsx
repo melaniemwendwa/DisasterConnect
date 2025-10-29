@@ -261,7 +261,7 @@ export default function EditReport() {
                       alt="Current"
                       className="w-full h-64 object-cover rounded-xl border mb-3"
                       onError={(e) => {
-                        e.currentTarget.src = "https://via.placeholder.com/600x400?text=No+Image";
+                        e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400'%3E%3Crect fill='%23f0f0f0' width='600' height='400'/%3E%3Ctext fill='%23999' font-family='sans-serif' font-size='24' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E";
                       }}
                     />
                     <p className="text-sm text-gray-500 mb-3">Current image</p>
