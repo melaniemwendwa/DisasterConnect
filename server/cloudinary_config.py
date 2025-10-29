@@ -26,6 +26,13 @@ def upload_image_to_cloudinary(image_file, folder="disaster_reports"):
         or None if upload fails
     """
     try:
+        # Verify Cloudinary is configured
+        if not is_cloudinary_configured():
+            print("❌ Cloudinary not configured! Missing environment variables.")
+            return None
+        
+        print(f"📤 Attempting Cloudinary upload to folder: {folder}")
+        
         # Upload to Cloudinary
         result = cloudinary.uploader.upload(
             image_file,
@@ -38,14 +45,21 @@ def upload_image_to_cloudinary(image_file, folder="disaster_reports"):
             ]
         )
         
-        print(f"☁️ Cloudinary upload success: {result['secure_url']}")
+        print(f"☁️ Cloudinary upload SUCCESS: {result['secure_url']}")
+        print(f"   Public ID: {result['public_id']}")
+        print(f"   Format: {result.get('format', 'unknown')}")
+        print(f"   Size: {result.get('bytes', 0)} bytes")
         
         return {
             'url': result['secure_url'],
             'public_id': result['public_id']
         }
     except Exception as e:
-        print(f"❌ Cloudinary upload failed: {str(e)}")
+        print(f"❌ Cloudinary upload FAILED!")
+        print(f"   Error type: {type(e).__name__}")
+        print(f"   Error message: {str(e)}")
+        import traceback
+        print(f"   Traceback: {traceback.format_exc()}")
         return None
 
 def delete_image_from_cloudinary(public_id):
