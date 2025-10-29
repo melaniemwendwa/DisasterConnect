@@ -42,8 +42,11 @@ class Reports(Resource):
             filename = secure_filename(image.filename)
             image_path = os.path.join(upload_folder, filename)
             image.save(image_path)
-            # Expose a web-accessible path (served from /uploads/<filename>)
-            image_url = f"/uploads/{filename}"
+            # Store full URL so frontend knows where to fetch from
+            # Get base URL from request or use environment variable
+            base_url = os.environ.get('BACKEND_URL', request.url_root.rstrip('/'))
+            image_url = f"{base_url}/uploads/{filename}"
+            print(f"📸 Image saved: {image_url}")
 
         severity_result = classify_severity(description)
         print(f"[AI Classification] Severity: {severity_result['severity']} "
@@ -125,7 +128,10 @@ class ReportByID(Resource):
                 filename = secure_filename(image.filename)
                 image_path = os.path.join(upload_folder, filename)
                 image.save(image_path)
-                data['image'] = f"/uploads/{filename}"
+                # Store full URL so frontend knows where to fetch from
+                base_url = os.environ.get('BACKEND_URL', request.url_root.rstrip('/'))
+                data['image'] = f"{base_url}/uploads/{filename}"
+                print(f"📸 Image updated: {data['image']}")
         else:
             # Handle JSON payload
             data = request.get_json(silent=True) or {}
