@@ -16,6 +16,7 @@ psycopg = {extras = ["binary"], version = "*"}
 openai = "*"
 python-dotenv = "*"
 annotated-types = "*"
+cloudinary = "*"
 
 [dev-packages]
 

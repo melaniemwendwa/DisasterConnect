@@ -6,6 +6,7 @@ import os
 from config import api, db
 from datetime import datetime, date, timezone
 from ai_utils import classify_disaster_type, classify_severity
+from cloudinary_config import upload_image_to_cloudinary, is_cloudinary_configured
 
 
 class Reports(Resource):
@@ -33,20 +34,26 @@ class Reports(Resource):
 
         image_url = None
         if image:
-            upload_folder = current_app.config["UPLOAD_FOLDER"]
-            # Ensure upload folder exists
-            os.makedirs(upload_folder, exist_ok=True)
-            # Use a more unique filename to prevent overwrites, e.g., using uuid or timestamp
-            # For simplicity, sticking to original logic but be mindful of collisions
-            # use a secure filename to avoid path traversal or unsafe characters
-            filename = secure_filename(image.filename)
-            image_path = os.path.join(upload_folder, filename)
-            image.save(image_path)
-            # Store full URL so frontend knows where to fetch from
-            # Get base URL from request or use environment variable
-            base_url = os.environ.get('BACKEND_URL', request.url_root.rstrip('/'))
-            image_url = f"{base_url}/uploads/{filename}"
-            print(f"📸 Image saved: {image_url}")
+            # Try Cloudinary first (if configured), otherwise fall back to local storage
+            if is_cloudinary_configured():
+                # Upload to Cloudinary (permanent storage)
+                result = upload_image_to_cloudinary(image, folder="disaster_reports")
+                if result:
+                    image_url = result['url']
+                    print(f"☁️ Image uploaded to Cloudinary: {image_url}")
+                else:
+                    print("⚠️ Cloudinary upload failed, using local storage")
+            
+            # Fallback to local storage (for development or if Cloudinary fails)
+            if not image_url:
+                upload_folder = current_app.config["UPLOAD_FOLDER"]
+                os.makedirs(upload_folder, exist_ok=True)
+                filename = secure_filename(image.filename)
+                image_path = os.path.join(upload_folder, filename)
+                image.save(image_path)
+                base_url = os.environ.get('BACKEND_URL', request.url_root.rstrip('/'))
+                image_url = f"{base_url}/uploads/{filename}"
+                print(f"💾 Image saved locally: {image_url}")
 
         severity_result = classify_severity(description)
         print(f"[AI Classification] Severity: {severity_result['severity']} "
@@ -123,15 +130,23 @@ class ReportByID(Resource):
             # Handle image upload
             image = request.files.get('image')
             if image:
-                upload_folder = current_app.config["UPLOAD_FOLDER"]
-                os.makedirs(upload_folder, exist_ok=True)
-                filename = secure_filename(image.filename)
-                image_path = os.path.join(upload_folder, filename)
-                image.save(image_path)
-                # Store full URL so frontend knows where to fetch from
-                base_url = os.environ.get('BACKEND_URL', request.url_root.rstrip('/'))
-                data['image'] = f"{base_url}/uploads/{filename}"
-                print(f"📸 Image updated: {data['image']}")
+                # Try Cloudinary first (if configured), otherwise fall back to local storage
+                if is_cloudinary_configured():
+                    result = upload_image_to_cloudinary(image, folder="disaster_reports")
+                    if result:
+                        data['image'] = result['url']
+                        print(f"☁️ Image updated (Cloudinary): {data['image']}")
+                
+                # Fallback to local storage
+                if 'image' not in data or not data['image']:
+                    upload_folder = current_app.config["UPLOAD_FOLDER"]
+                    os.makedirs(upload_folder, exist_ok=True)
+                    filename = secure_filename(image.filename)
+                    image_path = os.path.join(upload_folder, filename)
+                    image.save(image_path)
+                    base_url = os.environ.get('BACKEND_URL', request.url_root.rstrip('/'))
+                    data['image'] = f"{base_url}/uploads/{filename}"
+                    print(f"💾 Image updated (local): {data['image']}")
         else:
             # Handle JSON payload
             data = request.get_json(silent=True) or {}
