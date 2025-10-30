@@ -17,7 +17,6 @@ A full-stack web application for reporting and managing disaster incidents. User
 - [Database & migrations](#database--migrations)
 - [Testing](#testing)
 - [License](#license)
-- [Contact](#contact)
 
 ---
 
